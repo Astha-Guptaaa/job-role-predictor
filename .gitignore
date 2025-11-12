@@ -1,0 +1,19 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual environments
+venv/
+.env/
+
+# Jupyter / Colab
+.ipynb_checkpoints/
+*.csv
+*.xlsx
+
+# System / Editor files
+.DS_Store
+.vscode/
+.idea/
