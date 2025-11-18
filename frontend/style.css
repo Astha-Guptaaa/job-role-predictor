@@ -1,0 +1,62 @@
+/* ===== Global Styling ===== */
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f9;
+    margin: 0;
+    padding: 0;
+}
+
+/* ===== Center Box ===== */
+.container {
+    width: 400px;
+    margin: 60px auto;
+    background: white;
+    border-radius: 10px;
+    padding: 25px;
+    box-shadow: 0px 0px 15px rgba(0,0,0,0.1);
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+/* ===== Input Fields ===== */
+input, select {
+    width: 100%;
+    padding: 10px;
+    margin: 8px 0;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 15px;
+}
+
+/* ===== Buttons ===== */
+button {
+    width: 100%;
+    padding: 12px;
+    background: #4A90E2;
+    border: none;
+    color: white;
+    font-size: 16px;
+    margin-top: 10px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+button:hover {
+    background: #357ABD;
+}
+
+/* ===== Profile Labels ===== */
+label {
+    font-weight: bold;
+}
+
+/* ===== Message Styling ===== */
+#message {
+    margin-top: 15px;
+    text-align: center;
+    color: green;
+    font-weight: 600;
+}

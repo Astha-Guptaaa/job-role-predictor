@@ -2,6 +2,19 @@
   {
     "username": "Astha",
     "email": "astha7534@gmail.com",
-    "password": "7c04837eb356565e28bb14e5a1dedb240a5ac2561f8ed318c54a279fb6a9665e"
+    "password": "7c04837eb356565e28bb14e5a1dedb240a5ac2561f8ed318c54a279fb6a9665e",
+    "degree": "B.Tech",
+    "specialization": "CSE",
+    "cgpa": "8.26",
+    "certifications": "oracle"
+  },
+  {
+    "username": "Astha Gupta",
+    "email": "asthag414@gmail.com",
+    "password": "7c04837eb356565e28bb14e5a1dedb240a5ac2561f8ed318c54a279fb6a9665e",
+    "degree": "B.Tech",
+    "specialization": "CSE",
+    "cgpa": "8.26",
+    "certifications": "Infosys"
   }
 ]

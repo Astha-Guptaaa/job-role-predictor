@@ -3,21 +3,25 @@
 <head>
   <meta charset="utf-8" />
   <title>Login</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h2>Login</h2>
-  <form id="loginForm">
-    <input type="text" id="identifier" placeholder="Email or username" required /><br/>
-    <input type="password" id="password" placeholder="Enter password" required /><br/>
-    <button type="submit">Login</button>
-  </form>
-  <p id="loginMessage"></p>
+  <div class="container">
+    <h2>Login</h2>
+    <form id="loginForm">
+      <input type="text" id="identifier" placeholder="Email or username" required />
+      <input type="password" id="password" placeholder="Enter password" required />
+      <button type="submit">Login</button>
+    </form>
+    <p id="loginMessage"></p>
+  </div>
 
   <script>
+  // login script - stores token into localStorage
   document.getElementById("loginForm").addEventListener("submit", async (e) => {
     e.preventDefault();
     const data = {
-      email: document.getElementById("identifier").value, // backend also checks username
+      email: document.getElementById("identifier").value,
       username: document.getElementById("identifier").value,
       password: document.getElementById("password").value
     };
@@ -28,10 +32,14 @@
         headers: {"Content-Type": "application/json"},
         body: JSON.stringify(data)
       });
+
       const result = await res.json();
+
       if (res.ok && result.token) {
         localStorage.setItem("token", result.token);
         document.getElementById("loginMessage").innerText = "Login successful.";
+        // redirect to profile page
+        window.location.href = "profile.html";
       } else {
         document.getElementById("loginMessage").innerText = result.error || "Login failed";
       }
