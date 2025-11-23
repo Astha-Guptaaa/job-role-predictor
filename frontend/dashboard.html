@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8">
+  <title>User Dashboard</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="dashboard-container">
+
+  <!-- Header -->
+  <div class="header">
+    <div class="logo">Job Predictor</div>
+    <div class="welcome-msg">Welcome, <span id="user_name">User</span></div>
+    <div style="display:flex;gap:10px;align-items:center;">
+      <button id="profileBtn" class="small-btn">Profile</button>
+      <button id="logoutBtn" class="logout-btn small-btn">Logout</button>
+    </div>
+  </div>
+
+  <!-- Main Content -->
+  <div class="dashboard-content">
+
+    <!-- Profile Card -->
+    <div class="card">
+      <h3>Profile Info</h3>
+
+      <div class="profile-picture" style="text-align:center;">
+        <img id="profile_pic" class="profile-pic" src="" alt="Profile Picture" style="display:none;">
+      </div>
+
+      <p><strong>Name:</strong> <span id="name"></span></p>
+      <p><strong>Email:</strong> <span id="email"></span></p>
+      <p><strong>Degree:</strong> <span id="degree"></span></p>
+      <p><strong>Specialization:</strong> <span id="specialization"></span></p>
+      <p><strong>CGPA:</strong> <span id="cgpa"></span></p>
+      <p><strong>Certifications:</strong> <span id="certifications"></span></p>
+
+      <button id="editBtn">Edit Profile</button>
+    </div>
+
+    <!-- EDIT FORM CARD -->
+    <div class="card" id="editForm" style="display:none;">
+      <h3>Edit Profile</h3>
+
+      <label>Name</label>
+      <input id="edit_name"/>
+
+      <label>Degree</label>
+      <input id="edit_degree"/>
+
+      <label>Specialization</label>
+      <input id="edit_specialization"/>
+
+      <label>CGPA</label>
+      <input id="edit_cgpa"/>
+
+      <label>Certifications</label>
+      <input id="edit_certifications"/>
+
+      <button id="saveBtn">Save Changes</button>
+      <p id="update_msg"></p>
+    </div>
+
+    <!-- Prediction History Placeholder -->
+    <div class="card prediction-card">
+      <h3>Job Prediction History</h3>
+      <p>- No predictions yet (Coming soon)</p>
+    </div>
+
+  </div>
+
+</div>
+
+<script src="dashboard.js"></script>
+</body>
+</html>

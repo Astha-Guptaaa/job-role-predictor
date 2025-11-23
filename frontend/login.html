@@ -4,49 +4,112 @@
   <meta charset="utf-8" />
   <title>Login</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://accounts.google.com/gsi/client" async defer></script>
 </head>
 <body>
-  <div class="container">
-    <h2>Login</h2>
+
+<div class="container">
+  <h2>Login</h2>
+
+  <div class="info-section card">
     <form id="loginForm">
       <input type="text" id="identifier" placeholder="Email or username" required />
       <input type="password" id="password" placeholder="Enter password" required />
       <button type="submit">Login</button>
     </form>
     <p id="loginMessage"></p>
-  </div>
 
-  <script>
-  // login script - stores token into localStorage
-  document.getElementById("loginForm").addEventListener("submit", async (e) => {
+    <hr style="margin: 20px 0; border: 0.5px solid #ccc;">
+
+    <div id="googleButton" style="text-align:center;"></div>
+
+    <p style="text-align:center;margin-top:10px;">
+      Don't have an account? <a href="signup.html">Create one</a>
+    </p>
+  </div>
+</div>
+
+<script>
+function validateLogin(id, password) {
+    if (!id || !id.trim()) return "Enter email or username";
+    if (!password || password.length < 6) return "Password must be at least 6 characters";
+    return null;
+}
+
+document.getElementById("loginForm").addEventListener("submit", async (e) => {
     e.preventDefault();
-    const data = {
-      email: document.getElementById("identifier").value,
-      username: document.getElementById("identifier").value,
-      password: document.getElementById("password").value
-    };
+
+    const id = document.getElementById("identifier").value.trim();
+    const password = document.getElementById("password").value;
+    const msgEl = document.getElementById("loginMessage");
+
+    const error = validateLogin(id, password);
+    if (error) {
+        msgEl.innerText = error;
+        msgEl.style.color = "red";
+        return;
+    }
 
     try {
-      const res = await fetch("http://127.0.0.1:5000/login", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(data)
-      });
+        const res = await fetch("http://127.0.0.1:5000/login", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ email: id, username: id, password })
+        });
 
-      const result = await res.json();
+        const result = await res.json();
 
-      if (res.ok && result.token) {
-        localStorage.setItem("token", result.token);
-        document.getElementById("loginMessage").innerText = "Login successful.";
-        // redirect to profile page
-        window.location.href = "profile.html";
-      } else {
-        document.getElementById("loginMessage").innerText = result.error || "Login failed";
-      }
+        if (res.ok && result.token) {
+            localStorage.setItem("token", result.token);
+            // clear old google data
+            localStorage.removeItem("googleUser");
+            msgEl.innerText = "Login successful. Redirecting...";
+            msgEl.style.color = "green";
+            setTimeout(() => window.location.href = "dashboard.html", 600);
+        } else {
+            msgEl.innerText = result.error || "Login failed";
+            msgEl.style.color = "red";
+        }
     } catch (err) {
-      document.getElementById("loginMessage").innerText = "Network error";
+        msgEl.innerText = "Network error.";
+        msgEl.style.color = "red";
     }
-  });
-  </script>
+});
+
+// Google Login
+function handleGoogleLogin(response) {
+    if (!response.credential) return alert("No Google token received.");
+    fetch("http://127.0.0.1:5000/google-login", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ token: response.credential })
+    })
+    .then(res => res.json())
+    .then(data => {
+        if (data.token) {
+            localStorage.setItem("token", data.token);
+            localStorage.setItem("googleUser", JSON.stringify(data.user));
+            // go to dashboard (consistent flow)
+            window.location.href = "dashboard.html";
+        } else {
+            alert("Google login failed: " + (data.error || "unknown"));
+        }
+    })
+    .catch(() => alert("Network error during Google login. Make sure backend is running."));
+}
+
+window.onload = () => {
+    google.accounts.id.initialize({
+        client_id: "576054418642-45lq2r4mt2fielkav4n84cucc4l68c0r.apps.googleusercontent.com",
+        callback: handleGoogleLogin
+    });
+
+    google.accounts.id.renderButton(
+        document.getElementById("googleButton"),
+        { theme: "outline", size: "large" }
+    );
+};
+</script>
+
 </body>
 </html>

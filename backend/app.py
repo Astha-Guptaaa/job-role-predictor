@@ -5,194 +5,293 @@ import jwt
 import datetime
 import json
 import os
-import hashlib
+import re
+import logging
+import bcrypt
+from functools import wraps
+from google.oauth2 import id_token
+from google.auth.transport.requests import Request
 
+# ---------- Configuration ----------
 app = Flask(__name__)
-CORS(app)  # allow frontend calls
-app.secret_key = "mysecretkey"   # keep secret in real projects
+CORS(app)
+app.secret_key = "mysecretkey"  # keep secret in env for production
 
 USERS_FILE = os.path.join(os.path.dirname(__file__), "users.json")
 
-# ---------------------------------------------------------
-# HELPER FUNCTIONS
-# ---------------------------------------------------------
+# Setup basic logging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
 
+# ---------- Helpers (IO) ----------
 def load_users():
-    """Load user list from users.json"""
     if not os.path.exists(USERS_FILE):
         return []
     with open(USERS_FILE, "r", encoding="utf-8") as f:
         try:
             return json.load(f)
-        except:
+        except Exception as e:
+            logger.error("Failed to load users.json: %s", str(e))
             return []
 
 def save_users(users):
-    """Save updated user list to users.json"""
-    with open(USERS_FILE, "w", encoding="utf-8") as f:
-        json.dump(users, f, indent=2)
+    try:
+        with open(USERS_FILE, "w", encoding="utf-8") as f:
+            json.dump(users, f, indent=2)
+    except Exception as e:
+        logger.exception("Failed to save users.json: %s", str(e))
 
-def hash_password(password):
-    """Simple hash for demo purpose"""
-    return hashlib.sha256(password.encode()).hexdigest()
+# ---------- Password helpers (bcrypt) ----------
+def hash_password(password: str) -> str:
+    """Return bcrypt-hashed password (utf-8 string)."""
+    hashed = bcrypt.hashpw(password.encode("utf-8"), bcrypt.gensalt())
+    return hashed.decode("utf-8")
 
-# ---------------------------------------------------------
-# HOME
-# ---------------------------------------------------------
+def check_password(password: str, hashed: str) -> bool:
+    """Check plain password against stored bcrypt hash."""
+    try:
+        return bcrypt.checkpw(password.encode("utf-8"), hashed.encode("utf-8"))
+    except Exception:
+        return False
 
+# ---------- Token helpers ----------
+def generate_token(email: str):
+    payload = {
+        "email": email,
+        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=2)
+    }
+    token = jwt.encode(payload, app.secret_key, algorithm="HS256")
+    if isinstance(token, bytes):
+        token = token.decode("utf-8")
+    return token
+
+def verify_token(token: str):
+    try:
+        decoded = jwt.decode(token, app.secret_key, algorithms=["HS256"])
+        return decoded
+    except jwt.ExpiredSignatureError:
+        return None
+    except Exception:
+        return None
+
+def token_required(f):
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        auth_header = request.headers.get("Authorization")
+        if not auth_header:
+            return jsonify({"error": "Token missing"}), 401
+        token = auth_header.split()[-1]
+        decoded = verify_token(token)
+        if not decoded:
+            return jsonify({"error": "Invalid or expired token"}), 401
+        # pass decoded data via kwargs if needed
+        return f(decoded, *args, **kwargs)
+    return decorated
+
+# ---------- Validation helpers ----------
+EMAIL_REGEX = re.compile(r"^[^\s@]+@[^\s@]+\.[^\s@]+$")
+
+def validate_email(email: str) -> bool:
+    return bool(email and EMAIL_REGEX.match(email))
+
+def validate_signup_input(username: str, email: str, password: str):
+    if not username or len(username.strip()) < 3:
+        return "Username must be at least 3 characters"
+    if not validate_email(email):
+        return "Invalid email format"
+    if not password or len(password) < 6:
+        return "Password must be at least 6 characters"
+    return None
+
+def validate_profile_patch(data: dict):
+    # If degree provided, not empty
+    if "degree" in data and (not isinstance(data["degree"], str) or data["degree"].strip() == ""):
+        return "Degree cannot be empty"
+    # specialization min length if present
+    if "specialization" in data and data["specialization"] and len(data["specialization"].strip()) < 2:
+        return "Specialization must be at least 2 characters"
+    # cgpa numeric and between 0 and 10 if present
+    if "cgpa" in data and data["cgpa"] != "":
+        try:
+            cg = float(data["cgpa"])
+            if cg < 0 or cg > 10:
+                return "CGPA must be between 0 and 10"
+        except Exception:
+            return "Invalid CGPA value"
+    # certifications: optional, but if present can be string
+    return None
+
+# ---------- Routes ----------
 @app.get("/")
 def home():
     return {"message": "Server running"}
 
-# ---------------------------------------------------------
-# SIGNUP
-# ---------------------------------------------------------
-
+# ---------------- Signup ----------------
 @app.post("/signup")
 def signup():
-    data = request.json or {}
+    try:
+        data = request.json or {}
+        username = (data.get("username") or "").strip()
+        email = (data.get("email") or "").strip()
+        password = data.get("password") or ""
 
-    username = data.get("username")
-    email = data.get("email")
-    password = data.get("password")
+        # Basic validation
+        err = validate_signup_input(username, email, password)
+        if err:
+            return jsonify({"error": err}), 400
 
-    if not username or not email or not password:
-        return jsonify({"error": "username, email and password are required"}), 400
-
-    users = load_users()
-
-    # Check if email already exists
-    for u in users:
-        if u.get("email") == email:
+        users = load_users()
+        if any(u.get("email") == email for u in users):
             return jsonify({"error": "User already exists"}), 409
 
-    new_user = {
-        "username": username,
-        "email": email,
-        "password": hash_password(password),
+        # Hash password with bcrypt
+        hashed_pass = hash_password(password)
 
-        # Default empty profile fields
-        "degree": "",
-        "specialization": "",
-        "cgpa": "",
-        "certifications": ""
-    }
+        users.append({
+            "username": username,
+            "email": email,
+            "password": hashed_pass,
+            "degree": "",
+            "specialization": "",
+            "cgpa": "",
+            "certifications": ""
+        })
+        save_users(users)
+        return jsonify({"message": "User created"}), 201
 
-    users.append(new_user)
-    save_users(users)
+    except Exception as e:
+        logger.exception("Signup error: %s", str(e))
+        return jsonify({"error": "Internal server error"}), 500
 
-    return jsonify({"message": "User created"}), 201
-
-# ---------------------------------------------------------
-# LOGIN (email or username)
-# ---------------------------------------------------------
-
+# ---------------- Login ----------------
 @app.post("/login")
 def login():
-    data = request.json or {}
-    identifier = data.get("email") or data.get("username")
-    password = data.get("password")
-
-    if not identifier or not password:
-        return jsonify({"error": "email/username and password required"}), 400
-
-    users = load_users()
-    hashed = hash_password(password)
-
-    found = None
-    for u in users:
-        if (u.get("email") == identifier or u.get("username") == identifier) and u.get("password") == hashed:
-            found = u
-            break
-
-    if not found:
-        return jsonify({"error": "Invalid username or password"}), 401
-
-    token = jwt.encode({
-        "email": found.get("email"),
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=2)
-    }, app.secret_key, algorithm="HS256")
-
-    if isinstance(token, bytes):
-        token = token.decode("utf-8")
-
-    return jsonify({"token": token})
-
-# ---------------------------------------------------------
-# TOKEN VERIFICATION
-# ---------------------------------------------------------
-
-def verify_token(token):
     try:
-        decoded = jwt.decode(token, app.secret_key, algorithms=["HS256"])
-        return decoded
-    except:
-        return None
+        data = request.json or {}
+        identifier = (data.get("email") or data.get("username") or "").strip()
+        password = data.get("password") or ""
 
-# ---------------------------------------------------------
-# GET PROFILE (Protected Route)
-# ---------------------------------------------------------
+        if not identifier or not password:
+            return jsonify({"error": "email/username and password required"}), 400
 
+        users = load_users()
+        # find user by email or username
+        user = next((u for u in users if (u.get("email") == identifier or u.get("username") == identifier)), None)
+
+        if not user:
+            return jsonify({"error": "Invalid username or password"}), 401
+
+        stored_hash = user.get("password")
+        if not stored_hash or not check_password(password, stored_hash):
+            return jsonify({"error": "Invalid username or password"}), 401
+
+        token = generate_token(user.get("email"))
+        return jsonify({"token": token})
+    except Exception as e:
+        logger.exception("Login error: %s", str(e))
+        return jsonify({"error": "Internal server error"}), 500
+
+# ---------------- Protected Profile ----------------
 @app.get("/profile")
-def profile():
-    auth_header = request.headers.get("Authorization")
-    if not auth_header:
-        return jsonify({"error": "Token missing"}), 401
+@token_required
+def profile(decoded):
+    try:
+        email = decoded.get("email")
+        users = load_users()
+        user = next((u for u in users if u["email"] == email), None)
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+        return jsonify({"user": user}), 200
+    except Exception as e:
+        logger.exception("Profile error: %s", str(e))
+        return jsonify({"error": "Internal server error"}), 500
 
-    token = auth_header.split()[-1]
-    decoded = verify_token(token)
-    if not decoded:
-        return jsonify({"error": "Invalid or expired token"}), 401
+# ---------------- Edit Profile (PATCH) ----------------
+@app.patch("/profile/edit")
+@token_required
+def edit_profile(decoded):
+    try:
+        data = request.json or {}
 
-    users = load_users()
+        # Backend validation for PATCH
+        err = validate_profile_patch(data)
+        if err:
+            return jsonify({"error": err}), 400
 
-    # find full user details from JSON
-    for u in users:
-        if u["email"] == decoded["email"]:
-            return jsonify({"user": u}), 200
+        users = load_users()
+        email = decoded.get("email")
+        updated = False
+        for user in users:
+            if user["email"] == email:
+                # Only update fields provided
+                if "username" in data and data["username"] is not None:
+                    user["username"] = data["username"]
+                if "degree" in data and data["degree"] is not None:
+                    user["degree"] = data["degree"]
+                if "specialization" in data and data["specialization"] is not None:
+                    user["specialization"] = data["specialization"]
+                if "cgpa" in data and data["cgpa"] is not None:
+                    user["cgpa"] = data["cgpa"]
+                if "certifications" in data and data["certifications"] is not None:
+                    user["certifications"] = data["certifications"]
+                updated = True
+                break
 
-    return jsonify({"error": "User not found"}), 404
+        if not updated:
+            return jsonify({"error": "User not found"}), 404
 
-# ---------------------------------------------------------
-# UPDATE PROFILE (Protected Route)
-# ---------------------------------------------------------
+        save_users(users)
+        return jsonify({"message": "Profile updated successfully"}), 200
 
-@app.post("/profile/update")
-def update_profile():
-    auth_header = request.headers.get("Authorization")
-    if not auth_header:
-        return jsonify({"error": "Token missing"}), 401
+    except Exception as e:
+        logger.exception("Edit profile error: %s", str(e))
+        return jsonify({"error": "Internal server error"}), 500
 
-    token = auth_header.split()[-1]
-    decoded = verify_token(token)
-    if not decoded:
-        return jsonify({"error": "Invalid or expired token"}), 401
+# ---------------- Google Login ----------------
+@app.post("/google-login")
+def google_login():
+    try:
+        data = request.get_json()
+        google_token = data.get("token")
+        if not google_token:
+            return jsonify({"error": "No Google token provided"}), 400
 
-    data = request.json or {}
+        idinfo = id_token.verify_oauth2_token(
+            google_token,
+            Request(),
+            "576054418642-45lq2r4mt2fielkav4n84cucc4l68c0r.apps.googleusercontent.com"
+        )
+        email = idinfo.get("email")
+        username = idinfo.get("name")
+        picture = idinfo.get("picture")
 
-    users = load_users()
-    updated = False
+        users = load_users()
+        user = next((u for u in users if u["email"] == email), None)
+        if not user:
+            user = {
+                "username": username,
+                "email": email,
+                "password": None,
+                "degree": "",
+                "specialization": "",
+                "cgpa": "",
+                "certifications": ""
+            }
+            users.append(user)
+            save_users(users)
 
-    for user in users:
-        if user["email"] == decoded["email"]:
-            user["degree"] = data.get("degree", user.get("degree"))
-            user["specialization"] = data.get("specialization", user.get("specialization"))
-            user["cgpa"] = data.get("cgpa", user.get("cgpa"))
-            user["certifications"] = data.get("certifications", user.get("certifications"))
-            updated = True
-            break
+        token = generate_token(email)
+        return jsonify({"token": token, "user": {"username": username, "email": email, "picture": picture}})
 
-    if not updated:
-        return jsonify({"error": "User not found"}), 404
+    except ValueError as e:
+        # token invalid
+        logger.exception("Google token invalid: %s", str(e))
+        return jsonify({"error": "Invalid Google Token"}), 400
+    except Exception as e:
+        logger.exception("Google login error: %s", str(e))
+        return jsonify({"error": "Internal server error"}), 500
 
-    save_users(users)
-
-    return jsonify({"message": "Profile updated successfully"})
-
-# ---------------------------------------------------------
-# SERVER RUN
-# ---------------------------------------------------------
-
+# ---------------- Run Server ----------------
 if __name__ == "__main__":
     if not os.path.exists(USERS_FILE):
         save_users([])

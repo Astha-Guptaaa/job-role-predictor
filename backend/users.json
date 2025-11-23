@@ -1,20 +1,29 @@
 [
   {
-    "username": "Astha",
+    "username": "Astha Gupta",
     "email": "astha7534@gmail.com",
-    "password": "7c04837eb356565e28bb14e5a1dedb240a5ac2561f8ed318c54a279fb6a9665e",
-    "degree": "B.Tech",
+    "password": "$2b$12$OprJUkvCp3FmOgEY66v1XO5quTEai./4t7oS.iXKnhhIO.k6z.fiW",
+    "degree": "B.tech",
     "specialization": "CSE",
     "cgpa": "8.26",
-    "certifications": "oracle"
+    "certifications": "IBM"
   },
   {
-    "username": "Astha Gupta",
-    "email": "asthag414@gmail.com",
-    "password": "7c04837eb356565e28bb14e5a1dedb240a5ac2561f8ed318c54a279fb6a9665e",
-    "degree": "B.Tech",
-    "specialization": "CSE",
-    "cgpa": "8.26",
-    "certifications": "Infosys"
+    "username": "Atharv Gupta",
+    "email": "atharvgupta3736@gmail.com",
+    "password": "$2b$12$uFSF5JypltN6E565ob4dl.u6hLaF/fQknRbEc.4nJSWpHrVkSqX26",
+    "degree": "BTech",
+    "specialization": "AIML",
+    "cgpa": "9.20",
+    "certifications": "Microsoft"
+  },
+  {
+    "username": "Astha",
+    "email": "astha2@gmail.com",
+    "password": "$2b$12$Z9qOI/6f7jM55UEBlBADUeY8sw1IT0XZdaliLvyeRRlVImf1FiorO",
+    "degree": "",
+    "specialization": "",
+    "cgpa": "",
+    "certifications": ""
   }
 ]

@@ -9,37 +9,66 @@
 <div class="container">
     <h2>Create Account</h2>
 
-    <label>Name</label>
-    <input type="text" id="name">
+    <div class="info-section card">
+        <label>Name</label>
+        <input type="text" id="name" placeholder="Enter your name">
 
-    <label>Email</label>
-    <input type="email" id="email">
+        <label>Email</label>
+        <input type="email" id="email" placeholder="Enter your email">
 
-    <label>Password</label>
-    <input type="password" id="password">
+        <label>Password</label>
+        <input type="password" id="password" placeholder="Enter a password">
 
-    <button onclick="signupUser()">Signup</button>
-
-    <p id="message"></p>
+        <button id="signupBtn">Signup</button>
+        <p id="message"></p>
+        <p style="text-align:center;margin-top:8px;">
+            Already have an account? <a href="login.html">Login here</a>
+        </p>
+    </div>
 </div>
 
 <script>
-async function signupUser() {
-    let data = {
-        username: document.getElementById("name").value,
-        email: document.getElementById("email").value,
-        password: document.getElementById("password").value
-    };
-
-    let res = await fetch("http://127.0.0.1:5000/signup", {
-        method: "POST",
-        headers: {"Content-Type": "application/json"},
-        body: JSON.stringify(data)
-    });
-
-    let result = await res.json();
-    document.getElementById("message").innerText = result.message;
+function validateSignup(name, email, password) {
+    if (!name || name.trim().length < 3) return "Name must be at least 3 characters";
+    const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailPattern.test(email)) return "Invalid email format";
+    if (!password || password.length < 6) return "Password must be at least 6 characters";
+    return null;
 }
+
+document.getElementById("signupBtn").addEventListener("click", async () => {
+    const name = document.getElementById("name").value.trim();
+    const email = document.getElementById("email").value.trim();
+    const password = document.getElementById("password").value;
+
+    const err = validateSignup(name, email, password);
+    const msgEl = document.getElementById("message");
+    if (err) {
+        msgEl.innerText = err;
+        msgEl.style.color = "red";
+        return;
+    }
+
+    try {
+        const res = await fetch("http://127.0.0.1:5000/signup", {
+            method: "POST",
+            headers: {"Content-Type": "application/json"},
+            body: JSON.stringify({ username: name, email, password })
+        });
+        const result = await res.json();
+        if (res.ok) {
+            msgEl.innerText = result.message || "Signup successful. Redirecting to login...";
+            msgEl.style.color = "green";
+            setTimeout(() => window.location.href = "login.html", 900);
+        } else {
+            msgEl.innerText = result.error || "Signup failed";
+            msgEl.style.color = "red";
+        }
+    } catch (e) {
+        msgEl.innerText = "Network error. Make sure backend is running.";
+        msgEl.style.color = "red";
+    }
+});
 </script>
 
 </body>
