@@ -6,6 +6,7 @@ import datetime
 import json
 import os
 import re
+import datetime
 import logging
 import bcrypt
 from functools import wraps
@@ -290,6 +291,84 @@ def google_login():
     except Exception as e:
         logger.exception("Google login error: %s", str(e))
         return jsonify({"error": "Internal server error"}), 500
+
+# ---------------- Add Education Details ----------------
+@app.post("/education/add")
+@token_required
+def add_education(decoded):
+    try:
+        data = request.json or {}
+
+        # Extract fields (coerce to strings where appropriate)
+        degree = (data.get("degree") or "").strip()
+        specialization = (data.get("specialization") or "").strip()
+        cgpa_raw = data.get("cgpa", "")
+        year_raw = data.get("year", "")
+        certifications = (data.get("certifications") or "").strip()
+
+        # Server-side validation (collect all errors)
+        errors = {}
+
+        if not degree:
+            errors["degree"] = "Degree is required"
+        if not specialization:
+            errors["specialization"] = "Specialization is required"
+
+        # CGPA validation
+        try:
+            cgpa = float(cgpa_raw)
+            if cgpa < 0 or cgpa > 10:
+                errors["cgpa"] = "CGPA must be between 0 and 10"
+        except Exception:
+            errors["cgpa"] = "CGPA must be a number (0-10)"
+
+        # Year validation
+        try:
+            year = int(year_raw)
+            current_year = datetime.datetime.now().year
+            if year < 2000 or year > current_year:
+                errors["year"] = f"Graduation year must be between 2000 and {current_year}"
+        except Exception:
+            errors["year"] = "Graduation year must be a 4-digit number"
+
+        if errors:
+            # Return structured errors so frontend can show them
+            return jsonify({"error": "validation_failed", "errors": errors}), 400
+
+        # Find the user from the token
+        user_email = decoded.get("email")
+        users = load_users()
+        user = next((u for u in users if u.get("email") == user_email), None)
+
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        # Save fields into existing user structure
+        user["degree"] = degree
+        user["specialization"] = specialization
+        # store CGPA as string to keep same shape as other users, but use cgpa variable if you prefer number
+        user["cgpa"] = str(cgpa)
+        user["graduation_year"] = str(year)
+        user["certifications"] = certifications
+
+        save_users(users)
+
+        return jsonify({
+            "message": "Education details saved successfully",
+            "education": {
+                "degree": degree,
+                "specialization": specialization,
+                "cgpa": str(cgpa),
+                "graduation_year": str(year),
+                "certifications": certifications
+            }
+        }), 200
+
+    except Exception as e:
+        logger.exception("Education add error: %s", str(e))
+        return jsonify({"error": "Internal server error"}), 500
+
+
 
 # ---------------- Run Server ----------------
 if __name__ == "__main__":

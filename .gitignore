@@ -17,3 +17,10 @@ venv/
 .DS_Store
 .vscode/
 .idea/
+
+# Node / React
+node_modules/
+package-lock.json
+
+# Environment files
+.env

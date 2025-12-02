@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Education Details</title>
+    <script src="education.js" defer></script>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+
+<body class="bg-gradient-to-b from-blue-100 to-gray-100 min-h-screen">
+
+    <div class="w-full bg-blue-600 text-white px-8 py-4 flex justify-between">
+        <h1 class="text-2xl font-semibold">Job Predictor</h1>
+        <button onclick="window.location.href='dashboard.html'" class="text-white underline">
+            Back
+        </button>
+    </div>
+
+    <div class="max-w-lg mx-auto mt-10 p-6 bg-white shadow rounded-xl">
+
+        <h2 class="text-xl font-bold text-center mb-4">Education Details</h2>
+
+        <div class="flex flex-col gap-4">
+
+            <!-- Degree -->
+            <div>
+                <label class="block font-medium mb-1">Degree</label>
+                <select id="degree" class="w-full p-2 border rounded">
+                    <option value="">Select Degree</option>
+                    <option>B.Tech</option>
+                    <option>B.Sc</option>
+                    <option>M.Tech</option>
+                    <option>BCA</option>
+                    <option>MCA</option>
+                </select>
+                <p id="degreeError" class="text-red-500 text-sm"></p>
+            </div>
+
+            <!-- Specialization -->
+            <div>
+                <label class="block font-medium mb-1">Specialization</label>
+                <select id="specialization" class="w-full p-2 border rounded">
+                    <option value="">Select Specialization</option>
+                    <option>CSE</option>
+                    <option>IT</option>
+                    <option>ECE</option>
+                    <option>Mechanical</option>
+                    <option>Civil</option>
+                </select>
+                <p id="specializationError" class="text-red-500 text-sm"></p>
+            </div>
+
+            <!-- CGPA -->
+            <div>
+                <label class="block font-medium mb-1">CGPA</label>
+                <input type="number" id="cgpa" class="w-full p-2 border rounded" placeholder="Enter CGPA (out of 10)">
+                <p id="cgpaError" class="text-red-500 text-sm"></p>
+            </div>
+
+            <!-- Year -->
+            <div>
+                <label class="block font-medium mb-1">Graduation Year</label>
+                <input type="number" id="year" class="w-full p-2 border rounded" placeholder="2023">
+                <p id="yearError" class="text-red-500 text-sm"></p>
+            </div>
+
+            <!-- Certifications -->
+            <div>
+                <label class="block font-medium mb-1">Certifications</label>
+                <input type="text" id="certifications" class="w-full p-2 border rounded" placeholder="Python, ML, Cloud etc">
+            </div>
+
+            <button id="saveBtn" class="mt-4 bg-blue-600 hover:bg-blue-700 text-white py-2 rounded">
+                Save Education Details
+            </button>
+        </div>
+    </div>
+</body>
+</html>

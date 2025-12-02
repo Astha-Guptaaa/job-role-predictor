@@ -3,19 +3,21 @@
     "username": "Astha Gupta",
     "email": "astha7534@gmail.com",
     "password": "$2b$12$OprJUkvCp3FmOgEY66v1XO5quTEai./4t7oS.iXKnhhIO.k6z.fiW",
-    "degree": "B.tech",
-    "specialization": "CSE",
-    "cgpa": "8.26",
-    "certifications": "IBM"
+    "degree": "Bachelor of Technology",
+    "specialization": "Computer Science Engineering",
+    "cgpa": "8.4",
+    "certifications": "Python Fundamentals, SQL Basics",
+    "graduation_year": "2024"
   },
   {
     "username": "Atharv Gupta",
     "email": "atharvgupta3736@gmail.com",
     "password": "$2b$12$uFSF5JypltN6E565ob4dl.u6hLaF/fQknRbEc.4nJSWpHrVkSqX26",
-    "degree": "BTech",
-    "specialization": "AIML",
-    "cgpa": "9.20",
-    "certifications": "Microsoft"
+    "degree": "B.Tech",
+    "specialization": "CSE",
+    "cgpa": "8.26",
+    "certifications": "Infosys Python",
+    "graduation_year": "2025"
   },
   {
     "username": "Astha",
