@@ -1,0 +1,89 @@
+[
+    {
+        "username": "Astha Gupta",
+        "email": "astha7534@gmail.com",
+        "raw": {
+            "degree": "B.Tech",
+            "specialization": "CSE",
+            "cgpa": "8.26",
+            "certifications": "Infosys Python",
+            "graduation_year": "2024"
+        },
+        "processed": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0.826,
+            0,
+            0,
+            0,
+            1,
+            0
+        ]
+    },
+    {
+        "username": "Atharv Gupta",
+        "email": "atharvgupta3736@gmail.com",
+        "raw": {
+            "degree": "B.Tech",
+            "specialization": "CSE",
+            "cgpa": "8.26",
+            "certifications": "Infosys Python",
+            "graduation_year": "2025"
+        },
+        "processed": [
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            0.826,
+            0,
+            0,
+            0,
+            1,
+            0
+        ]
+    },
+    {
+        "username": "Astha",
+        "email": "astha2@gmail.com",
+        "raw": {
+            "degree": "",
+            "specialization": "",
+            "cgpa": "",
+            "certifications": "",
+            "graduation_year": "Unknown"
+        },
+        "processed": [
+            0,
+            0,
+            0,
+            0,
+            1,
+            0,
+            0,
+            0,
+            0,
+            1,
+            0.0,
+            0,
+            0,
+            0,
+            0,
+            1
+        ]
+    }
+]
