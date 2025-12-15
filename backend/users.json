@@ -3,11 +3,25 @@
     "username": "Astha Gupta",
     "email": "astha7534@gmail.com",
     "password": "$2b$12$OprJUkvCp3FmOgEY66v1XO5quTEai./4t7oS.iXKnhhIO.k6z.fiW",
-    "degree": "B.tech",
-    "specialization": "AIML",
-    "cgpa": "8.26",
+    "degree": "M.Sc",
+    "specialization": "Computer Science",
+    "cgpa": "8.2",
     "certifications": "Infosys Python",
-    "graduation_year": "2024"
+    "graduation_year": 2021,
+    "college_tier": "Tier 1",
+    "internship": "No",
+    "projects": "0-1",
+    "backlogs": "0",
+    "skills": {
+      "programming": "5",
+      "data_analysis": "5",
+      "ml": "5",
+      "web": "5",
+      "sql": "5",
+      "cloud": "5",
+      "communication": "5",
+      "problem_solving": "5"
+    }
   },
   {
     "username": "Atharv Gupta",
@@ -27,5 +41,29 @@
     "specialization": "",
     "cgpa": "",
     "certifications": ""
+  },
+  {
+    "username": "Astha Gupta",
+    "email": "asthag414@gmail.com",
+    "password": null,
+    "degree": "B.Com",
+    "specialization": "Accounting",
+    "cgpa": "8.2",
+    "certifications": "Microsoft Certified, Google Cloud Certified",
+    "graduation_year": 2022,
+    "college_tier": "Tier 1",
+    "internship": "Yes",
+    "projects": "0-1",
+    "backlogs": "0",
+    "skills": {
+      "programming": 9,
+      "data_analysis": 5,
+      "ml": 5,
+      "web": 5,
+      "sql": 5,
+      "cloud": 5,
+      "communication": 5,
+      "problem_solving": 5
+    }
   }
 ]

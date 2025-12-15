@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Skill Assessment</title>
+  <link rel="stylesheet" href="skills.css" />
+</head>
+<body>
+
+  <div class="navbar">
+    <h2>Edu2Job – Skill Assessment</h2>
+    <a href="dashboard.html">Back</a>
+  </div>
+
+  <div class="container">
+    <h3>Rate Your Skills (0 – 10)</h3>
+
+    <div class="skill">
+      <label>Programming <span id="programming_val">5</span></label>
+      <input type="range" min="0" max="10" value="5" id="programming">
+    </div>
+
+    <div class="skill">
+      <label>Data Analysis <span id="data_analysis_val">5</span></label>
+      <input type="range" min="0" max="10" value="5" id="data_analysis">
+    </div>
+
+    <div class="skill">
+      <label>Machine Learning <span id="ml_val">5</span></label>
+      <input type="range" min="0" max="10" value="5" id="ml">
+    </div>
+
+    <div class="skill">
+      <label>Web Development <span id="web_val">5</span></label>
+      <input type="range" min="0" max="10" value="5" id="web">
+    </div>
+
+    <div class="skill">
+      <label>Database / SQL <span id="sql_val">5</span></label>
+      <input type="range" min="0" max="10" value="5" id="sql">
+    </div>
+
+    <div class="skill">
+      <label>Cloud / DevOps <span id="cloud_val">5</span></label>
+      <input type="range" min="0" max="10" value="5" id="cloud">
+    </div>
+
+    <div class="skill">
+      <label>Communication <span id="communication_val">5</span></label>
+      <input type="range" min="0" max="10" value="5" id="communication">
+    </div>
+
+    <div class="skill">
+      <label>Problem Solving <span id="problem_solving_val">5</span></label>
+      <input type="range" min="0" max="10" value="5" id="problem_solving">
+    </div>
+
+    <button class="save-btn" id="saveSkillsBtn">Save Skills</button>
+    <p id="msg"></p>
+  </div>
+
+  <script src="skills.js"></script>
+</body>
+</html>

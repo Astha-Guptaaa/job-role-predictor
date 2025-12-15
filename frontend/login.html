@@ -1,5 +1,4 @@
-
-  <!-- login.html -->
+<!-- login.html -->
 <!doctype html>
 <html>
 <head>
@@ -10,7 +9,7 @@
 </head>
 <body>
 
-<div class="container">
+<div class="auth-container">
   <h2>Login</h2>
 
   <div class="info-section card">
@@ -41,11 +40,11 @@ function validateLogin(id, password) {
 document.getElementById("loginForm").addEventListener("submit", async (e) => {
     e.preventDefault();
 
-    const id = document.getElementById("identifier").value.trim();
+    const identifier = document.getElementById("identifier").value.trim();
     const password = document.getElementById("password").value;
     const msgEl = document.getElementById("loginMessage");
 
-    const error = validateLogin(id, password);
+    const error = validateLogin(identifier, password);
     if (error) {
         msgEl.innerText = error;
         msgEl.style.color = "red";
@@ -56,18 +55,29 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
         const res = await fetch("http://127.0.0.1:5000/login", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: id, username: id, password })
+            body: JSON.stringify({
+                email: identifier,
+                username: identifier,
+                password: password
+            })
         });
 
         const result = await res.json();
 
         if (res.ok && result.token) {
+            // ✅ REQUIRED FIXES
             localStorage.setItem("token", result.token);
-            // clear old google data
+            localStorage.setItem("email", identifier);
+
+            // clear google session if any
             localStorage.removeItem("googleUser");
+
             msgEl.innerText = "Login successful. Redirecting...";
             msgEl.style.color = "green";
-            setTimeout(() => window.location.href = "dashboard.html", 600);
+
+            setTimeout(() => {
+                window.location.href = "dashboard.html";
+            }, 600);
         } else {
             msgEl.innerText = result.error || "Login failed";
             msgEl.style.color = "red";
@@ -78,9 +88,13 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
     }
 });
 
-// Google Login
+// ---------------- GOOGLE LOGIN ----------------
 function handleGoogleLogin(response) {
-    if (!response.credential) return alert("No Google token received.");
+    if (!response.credential) {
+        alert("No Google token received.");
+        return;
+    }
+
     fetch("http://127.0.0.1:5000/google-login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -88,16 +102,20 @@ function handleGoogleLogin(response) {
     })
     .then(res => res.json())
     .then(data => {
-        if (data.token) {
+        if (data.token && data.user) {
+            // ✅ REQUIRED FIXES
             localStorage.setItem("token", data.token);
+            localStorage.setItem("email", data.user.email);
             localStorage.setItem("googleUser", JSON.stringify(data.user));
-            // go to dashboard (consistent flow)
+
             window.location.href = "dashboard.html";
         } else {
             alert("Google login failed: " + (data.error || "unknown"));
         }
     })
-    .catch(() => alert("Network error during Google login. Make sure backend is running."));
+    .catch(() => {
+        alert("Network error during Google login. Make sure backend is running.");
+    });
 }
 
 window.onload = () => {

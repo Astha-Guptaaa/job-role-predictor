@@ -9,18 +9,33 @@ import re
 import datetime
 import logging
 import bcrypt
+import pickle
 from functools import wraps
 from google.oauth2 import id_token
 from google.auth.transport.requests import Request
+from flask_jwt_extended import jwt_required, get_jwt_identity
+
 
 # ---------- Configuration ----------
 app = Flask(__name__)
+
+# CORS
 CORS(app)
-app.secret_key = "mysecretkey"  # keep secret in env for production
 
+# Flask secrets
+app.secret_key = "mysecretkey"  # move to .env in production
+
+# JWT configuration (ALL REQUIRED KEYS)
+app.config["JWT_SECRET_KEY"] = "super-secret-key"
+app.config["JWT_TOKEN_LOCATION"] = ["headers"]
+app.config["JWT_HEADER_NAME"] = "Authorization"
+app.config["JWT_HEADER_TYPE"] = "Bearer"
+
+# File paths
 USERS_FILE = os.path.join(os.path.dirname(__file__), "users.json")
-
-# Setup basic logging
+model = pickle.load(open("models/job_model.pkl", "rb"))
+vectorizer = pickle.load(open("models/vectorizer.pkl", "rb"))
+# Logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -299,43 +314,62 @@ def add_education(decoded):
     try:
         data = request.json or {}
 
-        # Extract fields (coerce to strings where appropriate)
+        # -------- Read fields from frontend --------
         degree = (data.get("degree") or "").strip()
         specialization = (data.get("specialization") or "").strip()
-        cgpa_raw = data.get("cgpa", "")
-        year_raw = data.get("year", "")
-        certifications = (data.get("certifications") or "").strip()
+        cgpa_raw = data.get("cgpa")
+        year_raw = data.get("year")
 
-        # Server-side validation (collect all errors)
+        college_tier = (data.get("collegeTier") or "").strip()
+        internship = (data.get("internship") or "").strip()
+        projects = (data.get("projects") or "").strip()
+        backlogs = (data.get("backlogs") or "").strip()
+
+        # certifications will come as list from checkbox UI
+        certifications = data.get("certifications", [])
+
+        # -------- Validation --------
         errors = {}
+        current_year = datetime.datetime.now().year
 
         if not degree:
             errors["degree"] = "Degree is required"
+
         if not specialization:
             errors["specialization"] = "Specialization is required"
 
-        # CGPA validation
+        # CGPA
         try:
             cgpa = float(cgpa_raw)
             if cgpa < 0 or cgpa > 10:
                 errors["cgpa"] = "CGPA must be between 0 and 10"
-        except Exception:
-            errors["cgpa"] = "CGPA must be a number (0-10)"
+        except:
+            errors["cgpa"] = "CGPA must be a number"
 
-        # Year validation
+        # Graduation year
         try:
             year = int(year_raw)
-            current_year = datetime.datetime.now().year
-            if year < 2000 or year > current_year:
-                errors["year"] = f"Graduation year must be between 2000 and {current_year}"
-        except Exception:
-            errors["year"] = "Graduation year must be a 4-digit number"
+            if year < 2010 or year > current_year:
+                errors["year"] = f"Year must be between 2010 and {current_year}"
+        except:
+            errors["year"] = "Invalid graduation year"
+
+        if not college_tier:
+            errors["collegeTier"] = "College tier is required"
+
+        if internship not in ["Yes", "No"]:
+            errors["internship"] = "Select internship experience"
+
+        if projects not in ["0-1", "2-3", "4+"]:
+            errors["projects"] = "Select number of projects"
+
+        if backlogs not in ["0", "1", "2+"]:
+            errors["backlogs"] = "Select backlogs"
 
         if errors:
-            # Return structured errors so frontend can show them
-            return jsonify({"error": "validation_failed", "errors": errors}), 400
+            return jsonify({"errors": errors}), 400
 
-        # Find the user from the token
+        # -------- Find user using token --------
         user_email = decoded.get("email")
         users = load_users()
         user = next((u for u in users if u.get("email") == user_email), None)
@@ -343,25 +377,21 @@ def add_education(decoded):
         if not user:
             return jsonify({"error": "User not found"}), 404
 
-        # Save fields into existing user structure
+        # -------- Save education data --------
         user["degree"] = degree
         user["specialization"] = specialization
-        # store CGPA as string to keep same shape as other users, but use cgpa variable if you prefer number
-        user["cgpa"] = str(cgpa)
-        user["graduation_year"] = str(year)
-        user["certifications"] = certifications
+        user["cgpa"] = cgpa
+        user["graduation_year"] = year
+        user["college_tier"] = college_tier
+        user["internship"] = internship
+        user["projects"] = projects
+        user["backlogs"] = backlogs
+        user["certifications"] = certifications  # list
 
         save_users(users)
 
         return jsonify({
-            "message": "Education details saved successfully",
-            "education": {
-                "degree": degree,
-                "specialization": specialization,
-                "cgpa": str(cgpa),
-                "graduation_year": str(year),
-                "certifications": certifications
-            }
+            "message": "Education details saved successfully"
         }), 200
 
     except Exception as e:
@@ -370,8 +400,56 @@ def add_education(decoded):
 
 
 
+# ---------------- Skills Add ----------------
+@app.route("/skills/add", methods=["POST"])
+def add_skills():
+    try:
+        data = request.json or {}
+        email = data.get("email")
+        skills = data.get("skills")
+
+        if not email or not skills:
+            return jsonify({"error": "Email and skills required"}), 400
+
+        users = load_users()
+
+        user = next((u for u in users if u.get("email") == email), None)
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        # Save skills inside user object
+        user["skills"] = skills
+
+        save_users(users)
+
+        return jsonify({"message": "Skills saved successfully"}), 200
+
+    except Exception as e:
+        print("Skills error:", e)
+        return jsonify({"error": "Server error"}), 500
+
+# ---------------- Skills Get ----------------
+@app.route("/skills/get/<email>", methods=["GET"])
+def get_skills(email):
+    try:
+        users = load_users()
+        user = next((u for u in users if u.get("email") == email), None)
+
+        if not user:
+            return jsonify({"error": "User not found"}), 404
+
+        return jsonify({
+            "skills": user.get("skills", {})
+        }), 200
+
+    except Exception as e:
+        logger.exception("Skills fetch error")
+        return jsonify({"error": "Server error"}), 500
+
+
 # ---------------- Run Server ----------------
 if __name__ == "__main__":
     if not os.path.exists(USERS_FILE):
         save_users([])
     app.run(debug=True)
+  

@@ -1,34 +1,38 @@
 
   <!-- dashboard.html -->
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <meta charset="utf-8">
-  <title>User Dashboard</title>
+  <meta charset="UTF-8">
+  <title>Edu2Job Dashboard</title>
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
 
 <div class="dashboard-container">
 
-  <!-- Header -->
+  <!-- ================= HEADER ================= -->
   <div class="header">
-    <div class="logo">Job Predictor</div>
-    <div class="welcome-msg">Welcome, <span id="user_name">User</span></div>
-    <div style="display:flex;gap:10px;align-items:center;">
+    <div class="logo">Edu2Job</div>
+
+    <div class="welcome-msg">
+      Welcome, <span id="user_name">User</span>
+    </div>
+
+    <div class="header-actions">
       <button id="profileBtn" class="small-btn">Profile</button>
       <button id="logoutBtn" class="logout-btn small-btn">Logout</button>
     </div>
   </div>
 
-  <!-- Main Content -->
+  <!-- ================= MAIN CONTENT ================= -->
   <div class="dashboard-content">
 
-    <!-- Profile Card -->
-    <div class="card">
-      <h3>Profile Info</h3>
+    <!-- ===== LEFT COLUMN : PROFILE INFO ===== -->
+    <div class="card profile-card">
+      <h3>Profile Information</h3>
 
-      <div class="profile-picture" style="text-align:center;">
+      <div class="profile-picture">
         <img id="profile_pic" class="profile-pic" src="" alt="Profile Picture" style="display:none;">
       </div>
 
@@ -39,46 +43,63 @@
       <p><strong>CGPA:</strong> <span id="cgpa"></span></p>
       <p><strong>Certifications:</strong> <span id="certifications"></span></p>
 
-      <button id="editBtn">Edit Profile</button>
+      <button id="editBtn" class="primary-btn">Edit Profile</button>
     </div>
 
-      <button onclick="window.location.href='education.html'" 
-class="bg-green-600 text-white px-4 py-2 rounded mt-2">
-    Add Education Details
-</button>
+    <!-- ===== CENTER COLUMN : ACTIONS ===== -->
+    <div class="card action-card">
+      <h3>Complete Your Profile</h3>
 
+      <p class="info-text">
+        Complete the sections below to get accurate job role predictions.
+      </p>
 
-    <!-- EDIT FORM CARD -->
-    <div class="card" id="editForm" style="display:none;">
+      <a href="education.html" class="action-btn">
+        Add / Update Education Details
+      </a>
+
+      <a href="skills.html" class="action-btn secondary">
+        Skill Assessment
+      </a>
+
+      <button class="predict-btn">
+        Analyze & Predict Job Role
+      </button>
+    </div>
+
+    <!-- ===== RIGHT COLUMN : PREDICTION HISTORY ===== -->
+    <div class="card prediction-card">
+      <h3>Prediction History</h3>
+      <p class="muted-text">
+        No predictions yet.<br>
+        Complete your profile and skills to see results here.
+      </p>
+    </div>
+
+    <!-- ===== EDIT PROFILE FORM (HIDDEN) ===== -->
+    <div class="card edit-card" id="editForm" style="display:none;">
       <h3>Edit Profile</h3>
 
       <label>Name</label>
-      <input id="edit_name"/>
+      <input id="edit_name" />
 
       <label>Degree</label>
-      <input id="edit_degree"/>
+      <input id="edit_degree" />
 
       <label>Specialization</label>
-      <input id="edit_specialization"/>
+      <input id="edit_specialization" />
 
       <label>CGPA</label>
-      <input id="edit_cgpa"/>
+      <input id="edit_cgpa" />
 
       <label>Certifications</label>
-      <input id="edit_certifications"/>
+      <input id="edit_certifications" />
 
-      <button id="saveBtn">Save Changes</button>
+      <button id="saveBtn" class="primary-btn">Save Changes</button>
       <p id="update_msg"></p>
     </div>
 
-    <!-- Prediction History Placeholder -->
-    <div class="card prediction-card">
-      <h3>Job Prediction History</h3>
-      <p>- No predictions yet (Coming soon)</p>
-    </div>
-
   </div>
-
 </div>
 
 <script src="dashboard.js"></script>

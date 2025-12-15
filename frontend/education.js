@@ -1,91 +1,163 @@
-document.addEventListener("DOMContentLoaded", function () {
-    const saveBtn = document.getElementById("saveBtn");
+window.onload = () => {
 
-    saveBtn.addEventListener("click", async function () {
-        // Read values
-        const degree = document.getElementById("degree").value.trim();
-        const specialization = document.getElementById("specialization").value.trim();
-        const cgpa = document.getElementById("cgpa").value.trim();
-        const year = document.getElementById("year").value.trim();
-        const certifications = document.getElementById("certifications").value.trim();
+  // ---------- Populate Graduation Years ----------
+  const gradYearSelect = document.getElementById("gradYear");
+  const currentYear = new Date().getFullYear();
 
-        // Clear previous errors
-        document.getElementById("degreeError").innerText = "";
-        document.getElementById("specializationError").innerText = "";
-        document.getElementById("cgpaError").innerText = "";
-        document.getElementById("yearError").innerText = "";
+  for (let year = currentYear; year >= 2000; year--) {
+    const option = document.createElement("option");
+    option.value = year;
+    option.textContent = year;
+    gradYearSelect.appendChild(option);
+  }
 
-        // Client-side validation (quick)
-        let valid = true;
-        const currentYear = new Date().getFullYear();
+  // ---------- Degree → Specialization Mapping (Expanded) ----------
+  const specializationMap = {
+    "B.Tech": [
+      "Computer Science",
+      "Information Technology",
+      "Artificial Intelligence",
+      "Data Science",
+      "Electronics",
+      "Mechanical",
+      "Civil"
+    ],
+    "B.E": [
+      "Computer Engineering",
+      "Electrical",
+      "Mechanical",
+      "Civil"
+    ],
+    "BCA": [
+      "Computer Applications",
+      "Data Analytics"
+    ],
+    "B.Sc": [
+      "Computer Science",
+      "Mathematics",
+      "Statistics",
+      "Physics"
+    ],
+    "B.Com": [
+      "Accounting",
+      "Finance"
+    ],
+    "BBA": [
+      "Management",
+      "Marketing"
+    ],
+    "M.Tech": [
+      "Computer Science",
+      "AI & ML",
+      "Data Science",
+      "Cyber Security"
+    ],
+    "MCA": [
+      "Software Development",
+      "Data Science"
+    ],
+    "M.Sc": [
+      "Computer Science",
+      "Data Science"
+    ],
+    "MBA": [
+      "HR",
+      "Marketing",
+      "Finance",
+      "Business Analytics"
+    ]
+  };
 
-        if (!degree) {
-            document.getElementById("degreeError").innerText = "Required";
-            valid = false;
-        }
-        if (!specialization) {
-            document.getElementById("specializationError").innerText = "Required";
-            valid = false;
-        }
-        const cgpaNum = parseFloat(cgpa);
-        if (isNaN(cgpaNum) || cgpaNum < 0 || cgpaNum > 10) {
-            document.getElementById("cgpaError").innerText = "Enter CGPA between 0 and 10";
-            valid = false;
-        }
-        const yearNum = parseInt(year, 10);
-        if (isNaN(yearNum) || year.length !== 4 || yearNum < 2000 || yearNum > currentYear) {
-            document.getElementById("yearError").innerText = `Enter valid year (2000–${currentYear})`;
-            valid = false;
-        }
+  const degreeSelect = document.getElementById("degree");
+  const specializationSelect = document.getElementById("specialization");
 
-        if (!valid) return;
+  degreeSelect.addEventListener("change", () => {
+    specializationSelect.innerHTML = `<option value="">Select Specialization</option>`;
+    const specs = specializationMap[degreeSelect.value] || [];
 
-        const token = localStorage.getItem("token");
-        if (!token) {
-            alert("Please login first.");
-            return;
-        }
-
-        try {
-            const res = await fetch("http://127.0.0.1:5000/education/add", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                    "Authorization": `Bearer ${token}`
-                },
-                body: JSON.stringify({
-                    degree,
-                    specialization,
-                    cgpa: cgpaNum,
-                    year: yearNum,
-                    certifications
-                })
-            });
-
-            const result = await res.json();
-
-            if (res.ok) {
-                alert("Education details saved successfully!");
-                // optionally show success UI or redirect
-                window.location.href = "dashboard.html";
-                return;
-            }
-
-            // If not ok, show validation errors if present
-            if (result && result.errors) {
-                if (result.errors.degree) document.getElementById("degreeError").innerText = result.errors.degree;
-                if (result.errors.specialization) document.getElementById("specializationError").innerText = result.errors.specialization;
-                if (result.errors.cgpa) document.getElementById("cgpaError").innerText = result.errors.cgpa;
-                if (result.errors.year) document.getElementById("yearError").innerText = result.errors.year;
-                return;
-            }
-
-            // Generic message fallback
-            alert(result.message || result.error || "Failed to save education details");
-
-        } catch (err) {
-            console.error("Network or server error:", err);
-            alert("Network error — please make sure backend is running at http://127.0.0.1:5000");
-        }
+    specs.forEach(spec => {
+      const option = document.createElement("option");
+      option.value = spec;
+      option.textContent = spec;
+      specializationSelect.appendChild(option);
     });
-});
+  });
+
+  // ---------- Other Certificate Toggle ----------
+  const otherCheck = document.getElementById("certOtherCheck");
+  const otherInput = document.getElementById("otherCertificate");
+
+  otherCheck.addEventListener("change", () => {
+    if (otherCheck.checked) {
+      otherInput.style.display = "block";
+    } else {
+      otherInput.style.display = "none";
+      otherInput.value = "";
+    }
+  });
+
+  // ---------- Form Submit ----------
+  document.getElementById("educationForm").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Please login again");
+      window.location.href = "login.html";
+      return;
+    }
+
+    const certifications = [];
+    document.querySelectorAll(".cert-item input:checked").forEach(cb => {
+      if (cb.value === "Other") {
+        if (otherInput.value.trim()) {
+          certifications.push(otherInput.value.trim());
+        }
+      } else {
+        certifications.push(cb.value);
+      }
+    });
+
+    const educationData = {
+      degree: degreeSelect.value,
+      specialization: specializationSelect.value,
+      cgpa: document.getElementById("cgpa").value,
+      year: gradYearSelect.value,
+      collegeTier: document.getElementById("collegeTier").value,
+      internship: document.getElementById("internship").value,
+      projects: document.getElementById("projects").value,
+      backlogs: document.getElementById("backlogs").value,
+      certifications: certifications
+    };
+
+    try {
+      const res = await fetch("http://127.0.0.1:5000/education/add", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": "Bearer " + token
+        },
+        body: JSON.stringify(educationData)
+      });
+
+      const data = await res.json();
+
+      if (res.ok) {
+        alert("Education details saved successfully");
+        window.location.href = "dashboard.html";
+      } else {
+        alert("Error: " + JSON.stringify(data.errors || data.error));
+      }
+
+    } catch (err) {
+      console.error(err);
+      alert("Network error");
+    }
+  });
+
+  // ---------- Back Button ----------
+  document.getElementById("backBtn").addEventListener("click", () => {
+    window.location.href = "profile.html";
+  });
+
+};

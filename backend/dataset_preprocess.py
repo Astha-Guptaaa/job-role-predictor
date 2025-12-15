@@ -1,47 +1,38 @@
+#dataset_preprocess.py
 import pandas as pd
-from sklearn.preprocessing import LabelEncoder, MinMaxScaler
+from sklearn.preprocessing import LabelEncoder
 
-def preprocess_kaggle_dataset():
-    # Load dataset
-    df = pd.read_csv("archive/Placement_data_full_class.csv")
+print("\n==============================")
+print("📌 RESUME DATASET PREPROCESSING")
+print("==============================\n")
 
-    print("Before Preprocessing:")
-    print(df.head())
+# Load datasets
+tech_df = pd.read_csv("dataset/Technical_Category_Resume.csv")
+nontech_df = pd.read_csv("dataset/NonTechnical_Category_Resume.csv")
 
-    # ------------------------------
-    # 1. Handle Missing Values
-    # ------------------------------
-    df.fillna("Unknown", inplace=True)
+print("✅ Datasets loaded")
 
-    # ------------------------------
-    # 2. Label Encoding for Categories
-    # ------------------------------
-    label_cols = ["gender", "workex", "specialisation", "status"]
+# Add job role column
+tech_df["job_role"] = tech_df["Category"]
+nontech_df["job_role"] = nontech_df["Category"]
 
-    encoders = {}
-    for col in label_cols:
-        le = LabelEncoder()
-        df[col] = le.fit_transform(df[col].astype(str))
-        encoders[col] = le
+# Combine datasets
+df = pd.concat([tech_df, nontech_df], ignore_index=True)
+print(f"📊 Combined dataset shape: {df.shape}")
 
-    # ------------------------------
-    # 3. Normalizing Numeric Columns
-    # ------------------------------
-    numeric_cols = ["ssc_p", "hsc_p", "degree_p", "etest_p", "mba_p"]
+# Select relevant columns
+df = df[["job_role", "Resume"]]
 
-    scaler = MinMaxScaler()
-    df[numeric_cols] = scaler.fit_transform(df[numeric_cols])
+# Remove missing values
+df.dropna(inplace=True)
+print("🧹 Missing values removed")
 
-    # ------------------------------
-    # 4. Save Processed File
-    # ------------------------------
-    df.to_csv("archive/processed_kaggle_data.csv", index=False)
+# Encode job roles
+label_encoder = LabelEncoder()
+df["job_role_encoded"] = label_encoder.fit_transform(df["job_role"])
 
-    print("\nAfter Preprocessing:")
-    print(df.head())
+# Save cleaned dataset
+df.to_csv("dataset/edu2job_cleaned.csv", index=False)
+print("💾 Cleaned dataset saved: dataset/edu2job_cleaned.csv")
 
-    print("\n✔ Dataset preprocessing done!")
-    print("✔ Processed file saved at: archive/processed_kaggle_data.csv")
-
-# Run preprocessing
-preprocess_kaggle_dataset()
+print("\n🎯 Preprocessing completed successfully!")

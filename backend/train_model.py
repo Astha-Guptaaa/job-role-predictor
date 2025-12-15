@@ -1,34 +1,50 @@
-# import pandas as pd
-# from sklearn.model_selection import train_test_split
-# from sklearn.ensemble import RandomForestClassifier
-# import joblib
+# file name- train_model.py
 
-# # ---------------------------
-# # LOAD CLEANED DATA
-# # ---------------------------
-# df = pd.read_csv("cleaned_dataset.csv")
+import pandas as pd
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.linear_model import LogisticRegression
+from sklearn.metrics import accuracy_score
+import pickle
 
-# # 'status_Placed' becomes the label after one-hot encoding
-# X = df.drop("status_Placed", axis=1)
-# y = df["status_Placed"]
+print("\n==============================")
+print("📌 DAY-3: MODEL TRAINING")
+print("==============================\n")
 
-# # ---------------------------
-# # TRAIN–TEST SPLIT
-# # ---------------------------
-# X_train, X_test, y_train, y_test = train_test_split(
-#     X, y, test_size=0.2, random_state=42
-# )
+# Load train & test data
+train_df = pd.read_csv("dataset/train_data.csv")
+test_df = pd.read_csv("dataset/test_data.csv")
 
-# # ---------------------------
-# # TRAIN MODEL
-# # ---------------------------
-# model = RandomForestClassifier()
-# model.fit(X_train, y_train)
+X_train = train_df["Resume"]
+y_train = train_df["job_role_encoded"]
 
-# # ---------------------------
-# # SAVE MODEL
-# # ---------------------------
-# joblib.dump(model, "models/job_predictor.pkl")
+X_test = test_df["Resume"]
+y_test = test_df["job_role_encoded"]
 
-# print("Model training complete!")
-# print("Saved → models/job_predictor.pkl")
+# TF-IDF Vectorization
+vectorizer = TfidfVectorizer(
+    max_features=5000,
+    stop_words="english"
+)
+
+X_train_vec = vectorizer.fit_transform(X_train)
+X_test_vec = vectorizer.transform(X_test)
+
+print("✅ TF-IDF vectorization completed")
+
+# Train model
+model = LogisticRegression(max_iter=1000)
+model.fit(X_train_vec, y_train)
+
+print("✅ Model training completed")
+
+# Prediction & accuracy
+y_pred = model.predict(X_test_vec)
+accuracy = accuracy_score(y_test, y_pred)
+
+print(f"🎯 Model Accuracy: {accuracy:.4f}")
+
+# Save model files
+pickle.dump(model, open("models/job_model.pkl", "wb"))
+pickle.dump(vectorizer, open("models/vectorizer.pkl", "wb"))
+
+print("💾 Model files saved successfully")

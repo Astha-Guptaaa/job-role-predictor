@@ -1,6 +1,4 @@
-
-  <!-- profile.html -->
-   <!doctype html>
+<!doctype html>
 <html>
 <head>
   <meta charset="utf-8" />
@@ -9,13 +7,16 @@
 </head>
 <body>
 
-<div class="container">
+<div class="container profile-container">
 
-  <h2>User Profile</h2>
+  <h2  class="page-title">User Profile</h2>
 
-  <!-- Google Info -->
-  <div id="google-info" class="card center-card">
-    <img id="g_pic" style="display:none;">
+   <!-- Google Info -->
+  <div id="google-info" class="card center-card profile-header">
+    <div class="avatar-wrapper">
+      <img id="g_pic" class="profile-avatar" style="display:none;">
+      <div id="avatar-letter" class="profile-avatar fallback">A</div>
+    </div>
     <h3 id="g_name"></h3>
     <p id="g_email"></p>
   </div>
@@ -23,33 +24,34 @@
   <!-- Personal Info -->
   <div class="card">
     <h3>Personal Info</h3>
-    <p>Name: <span id="name"></span></p>
-    <p>Email: <span id="email"></span></p>
+    <p><strong>Name:</strong> <span id="name"></span></p>
+    <p><strong>Email:</strong> <span id="email"></span></p>
   </div>
 
-  <!-- Edit Profile -->
-  <div class="card">
-    <h3>Edit Profile</h3>
+  <!-- Education / Edit Profile -->
+  <div class="card edit-card">
+    <h3>Edit Education & Profile</h3>
+
     <label>Name</label>
-    <input id="edit_name" placeholder="Enter your name">
+    <input id="edit_name">
 
     <label>Degree</label>
-    <input id="edit_degree" placeholder="Enter your degree">
+    <input id="edit_degree" placeholder="e.g. B.Tech, B.Com">
 
     <label>Specialization</label>
-    <input id="edit_specialization" placeholder="Enter specialization">
+    <input id="edit_specialization" placeholder="e.g. Computer Science">
 
     <label>CGPA</label>
-    <input id="edit_cgpa" placeholder="Enter CGPA">
+    <input id="edit_cgpa" placeholder="0 - 10">
 
     <label>Certifications</label>
-    <input id="edit_certifications" placeholder="Enter certifications">
+    <input id="edit_certifications" placeholder="Comma separated">
 
-    <button id="saveBtn">Save Changes</button>
+    <button id="saveBtn" class="primary-btn">Save Changes</button>
     <p id="update_msg"></p>
   </div>
 
-  <div style="display:flex;gap:10px;align-items:center;margin-top:10px;">
+  <div class="profile-actions">
     <button id="backBtn" class="small-btn">Back to Dashboard</button>
     <button id="logoutBtn" class="logout-btn">Logout</button>
   </div>

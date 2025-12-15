@@ -3,16 +3,25 @@
         "username": "Astha Gupta",
         "email": "astha7534@gmail.com",
         "raw": {
-            "degree": "B.Tech",
-            "specialization": "CSE",
-            "cgpa": "8.26",
-            "certifications": "Infosys Python",
-            "graduation_year": "2024"
+            "degree": "M.Sc",
+            "specialization": "Computer Science",
+            "cgpa": "8.2",
+            "college_tier": "Tier 1",
+            "internship": "No",
+            "projects": "0-1",
+            "backlogs": "0",
+            "skills": {
+                "programming": "5",
+                "data_analysis": "5",
+                "ml": "5",
+                "web": "5",
+                "sql": "5",
+                "cloud": "5",
+                "communication": "5",
+                "problem_solving": "5"
+            }
         },
         "processed": [
-            1,
-            0,
-            0,
             0,
             0,
             1,
@@ -20,12 +29,26 @@
             0,
             0,
             0,
-            0.826,
+            1,
+            0,
+            0,
+            0,
             0,
             0,
             0,
             1,
-            0
+            0.82,
+            0,
+            1,
+            0,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
         ]
     },
     {
@@ -35,8 +58,11 @@
             "degree": "B.Tech",
             "specialization": "CSE",
             "cgpa": "8.26",
-            "certifications": "Infosys Python",
-            "graduation_year": "2025"
+            "college_tier": null,
+            "internship": null,
+            "projects": null,
+            "backlogs": null,
+            "skills": {}
         },
         "processed": [
             1,
@@ -44,28 +70,51 @@
             0,
             0,
             0,
+            0,
+            0,
+            0,
             1,
             0,
             0,
             0,
             0,
+            0,
+            4,
             0.826,
             0,
             0,
             0,
-            1,
-            0
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0,
+            0.0
         ]
     },
     {
-        "username": "Astha",
-        "email": "astha2@gmail.com",
+        "username": "Astha Gupta",
+        "email": "asthag414@gmail.com",
         "raw": {
-            "degree": "",
-            "specialization": "",
-            "cgpa": "",
-            "certifications": "",
-            "graduation_year": "Unknown"
+            "degree": "B.Com",
+            "specialization": "Accounting",
+            "cgpa": "8.2",
+            "college_tier": "Tier 1",
+            "internship": "Yes",
+            "projects": "0-1",
+            "backlogs": "0",
+            "skills": {
+                "programming": 9,
+                "data_analysis": 5,
+                "ml": 5,
+                "web": 5,
+                "sql": 5,
+                "cloud": 5,
+                "communication": 5,
+                "problem_solving": 5
+            }
         },
         "processed": [
             0,
@@ -77,13 +126,24 @@
             0,
             0,
             0,
+            0,
+            0,
+            0,
             1,
-            0.0,
             0,
+            1,
+            0.82,
+            1,
+            1,
             0,
-            0,
-            0,
-            1
+            0.9,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5,
+            0.5
         ]
     }
 ]
