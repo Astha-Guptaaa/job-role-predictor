@@ -1,3 +1,4 @@
+// profile.js
 window.onload = async () => {
     const token = localStorage.getItem("token");
     const googleUser = JSON.parse(localStorage.getItem("googleUser") || "null");
@@ -20,16 +21,27 @@ window.onload = async () => {
         }
 
         const u = result.user;
+        const edu = u.education || {};
+
+        document.getElementById("degree").textContent = edu.degree || "-";
+        document.getElementById("specialization").textContent = edu.specialization || "-";
+        document.getElementById("cgpa").textContent = edu.cgpa || "-";
+
+        document.getElementById("certifications").textContent =
+             (edu.certifications && edu.certifications.join(", ")) || "-";
+
 
 // Display basic info
 document.getElementById("name").textContent = u.username || "";
 document.getElementById("email").textContent = u.email || "";
+document.getElementById("about").textContent = u.about || "";
+
 
 // Google info
 if (googleUser) {
     document.getElementById("g_name").textContent = googleUser.username || "";
     document.getElementById("g_email").textContent = googleUser.email || "";
-
+    
     if (googleUser.picture) {
         const img = document.getElementById("g_pic");
         img.src = googleUser.picture;
@@ -42,14 +54,12 @@ if (googleUser) {
 }
 
 
+
         // Autofill edit fields (SYNC WITH ML INPUT)
         document.getElementById("edit_name").value = u.username || "";
-        document.getElementById("edit_degree").value = u.degree || "";
-        document.getElementById("edit_specialization").value = u.specialization || "";
-        document.getElementById("edit_cgpa").value = u.cgpa || "";
-        document.getElementById("edit_certifications").value =
-            Array.isArray(u.certifications) ? u.certifications.join(", ") : (u.certifications || "");
+        document.getElementById("edit_about").value = u.about || "";
 
+        
     } catch {
         document.getElementById("msg").textContent = "Network error";
     }
@@ -63,24 +73,10 @@ document.getElementById("saveBtn").addEventListener("click", async () => {
 
     const data = {
         username: edit_name.value.trim(),
-        degree: edit_degree.value.trim(),
-        specialization: edit_specialization.value.trim(),
-        cgpa: edit_cgpa.value.trim(),
-        certifications: edit_certifications.value.trim()
+        about: edit_about.value.trim()
     };
 
-    // Required validation (ML needs these)
-    if (!data.degree || !data.specialization || !data.cgpa) {
-        msg.textContent = "Degree, Specialization and CGPA are required";
-        msg.style.color = "red";
-        return;
-    }
-
-    if (isNaN(data.cgpa) || data.cgpa < 0 || data.cgpa > 10) {
-        msg.textContent = "CGPA must be between 0 and 10";
-        msg.style.color = "red";
-        return;
-    }
+    
 
     try {
         const res = await fetch("http://127.0.0.1:5000/profile/edit", {

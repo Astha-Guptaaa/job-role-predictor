@@ -1,5 +1,4 @@
-
-  <!-- dashboard.html -->
+ <!-- dashboard.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -38,6 +37,7 @@
 
       <p><strong>Name:</strong> <span id="name"></span></p>
       <p><strong>Email:</strong> <span id="email"></span></p>
+      <p><strong>About You:</strong> <span id="about"></span></p>
       <p><strong>Degree:</strong> <span id="degree"></span></p>
       <p><strong>Specialization:</strong> <span id="specialization"></span></p>
       <p><strong>CGPA:</strong> <span id="cgpa"></span></p>
@@ -61,20 +61,27 @@
       <a href="skills.html" class="action-btn secondary">
         Skill Assessment
       </a>
-
-      <button class="predict-btn">
-        Analyze & Predict Job Role
-      </button>
+<button id="predictBtn" class="btn btn-success predict-btn" type="button">
+  Analyze & Predict Job Role
+</button>
     </div>
-
+ 
     <!-- ===== RIGHT COLUMN : PREDICTION HISTORY ===== -->
-    <div class="card prediction-card">
-      <h3>Prediction History</h3>
-      <p class="muted-text">
-        No predictions yet.<br>
-        Complete your profile and skills to see results here.
-      </p>
-    </div>
+   <div class="card prediction-card">
+  <h3>Job Role Prediction</h3>
+
+  <!-- NEW PREDICTION -->
+  <div id="predictionResult" style="display:none;"></div>
+
+  <!-- PREDICTION HISTORY -->
+  <div id="predictionHistory"></div>
+
+  <p class="muted-text" id="noPredictionText">
+    No predictions yet.<br>
+    Complete your profile to see results here.
+  </p>
+</div>
+
 
     <!-- ===== EDIT PROFILE FORM (HIDDEN) ===== -->
     <div class="card edit-card" id="editForm" style="display:none;">
@@ -83,17 +90,8 @@
       <label>Name</label>
       <input id="edit_name" />
 
-      <label>Degree</label>
-      <input id="edit_degree" />
-
-      <label>Specialization</label>
-      <input id="edit_specialization" />
-
-      <label>CGPA</label>
-      <input id="edit_cgpa" />
-
-      <label>Certifications</label>
-      <input id="edit_certifications" />
+      <label>About You</label>
+      <textarea id="edit_about" rows="3" placeholder="Write a short summary about yourself"></textarea>
 
       <button id="saveBtn" class="primary-btn">Save Changes</button>
       <p id="update_msg"></p>

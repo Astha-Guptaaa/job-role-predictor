@@ -1,3 +1,4 @@
+<!--profile.html-->
 <!doctype html>
 <html>
 <head>
@@ -26,6 +27,12 @@
     <h3>Personal Info</h3>
     <p><strong>Name:</strong> <span id="name"></span></p>
     <p><strong>Email:</strong> <span id="email"></span></p>
+    <p><strong>About:</strong> <span id="about"></span></p>
+    <p><strong>Degree:</strong> <span id="degree"></span></p>
+    <p><strong>Specialization:</strong> <span id="specialization"></span></p>
+    <p><strong>CGPA:</strong> <span id="cgpa"></span></p>
+    <p><strong>Certifications:</strong> <span id="certifications"></span></p>
+
   </div>
 
   <!-- Education / Edit Profile -->
@@ -35,17 +42,8 @@
     <label>Name</label>
     <input id="edit_name">
 
-    <label>Degree</label>
-    <input id="edit_degree" placeholder="e.g. B.Tech, B.Com">
-
-    <label>Specialization</label>
-    <input id="edit_specialization" placeholder="e.g. Computer Science">
-
-    <label>CGPA</label>
-    <input id="edit_cgpa" placeholder="0 - 10">
-
-    <label>Certifications</label>
-    <input id="edit_certifications" placeholder="Comma separated">
+    <label>About You</label>
+    <textarea id="edit_about" placeholder="Write a short summary about yourself"></textarea>
 
     <button id="saveBtn" class="primary-btn">Save Changes</button>
     <p id="update_msg"></p>

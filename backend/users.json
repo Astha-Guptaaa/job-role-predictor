@@ -2,68 +2,30 @@
   {
     "username": "Astha Gupta",
     "email": "astha7534@gmail.com",
-    "password": "$2b$12$OprJUkvCp3FmOgEY66v1XO5quTEai./4t7oS.iXKnhhIO.k6z.fiW",
-    "degree": "M.Sc",
-    "specialization": "Computer Science",
-    "cgpa": "8.2",
-    "certifications": "Infosys Python",
-    "graduation_year": 2021,
-    "college_tier": "Tier 1",
-    "internship": "No",
-    "projects": "0-1",
-    "backlogs": "0",
-    "skills": {
-      "programming": "5",
-      "data_analysis": "5",
-      "ml": "5",
-      "web": "5",
-      "sql": "5",
-      "cloud": "5",
-      "communication": "5",
-      "problem_solving": "5"
-    }
-  },
-  {
-    "username": "Atharv Gupta",
-    "email": "atharvgupta3736@gmail.com",
-    "password": "$2b$12$uFSF5JypltN6E565ob4dl.u6hLaF/fQknRbEc.4nJSWpHrVkSqX26",
-    "degree": "B.Tech",
-    "specialization": "CSE",
-    "cgpa": "8.26",
-    "certifications": "Infosys Python",
-    "graduation_year": "2025"
-  },
-  {
-    "username": "Astha",
-    "email": "astha2@gmail.com",
-    "password": "$2b$12$Z9qOI/6f7jM55UEBlBADUeY8sw1IT0XZdaliLvyeRRlVImf1FiorO",
-    "degree": "",
-    "specialization": "",
-    "cgpa": "",
-    "certifications": ""
-  },
-  {
-    "username": "Astha Gupta",
-    "email": "asthag414@gmail.com",
     "password": null,
-    "degree": "B.Com",
-    "specialization": "Accounting",
-    "cgpa": "8.2",
-    "certifications": "Microsoft Certified, Google Cloud Certified",
-    "graduation_year": 2022,
-    "college_tier": "Tier 1",
-    "internship": "Yes",
-    "projects": "0-1",
-    "backlogs": "0",
+    "about": "I am a final year student.",
+    "education": {
+      "degree": "B.Tech",
+      "specialization": "Data Science",
+      "cgpa": 9.1,
+      "year": 2025,
+      "collegeTier": "Tier 2",
+      "internship": "Yes",
+      "projects": "2-3",
+      "backlogs": "0",
+      "certifications": [
+        "Data Science Certification"
+      ]
+    },
     "skills": {
-      "programming": 9,
-      "data_analysis": 5,
-      "ml": 5,
-      "web": 5,
-      "sql": 5,
-      "cloud": 5,
-      "communication": 5,
-      "problem_solving": 5
+      "programming": 10,
+      "data_analysis": 10,
+      "ml": 10,
+      "web": 0,
+      "sql": 0,
+      "cloud": 0,
+      "communication": 0,
+      "problem_solving": 0
     }
   }
 ]

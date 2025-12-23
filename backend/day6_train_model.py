@@ -1,4 +1,5 @@
-# DAY 6 - RANDOM FOREST MODEL TRAINING (BEGINNER FRIENDLY)
+# day6_train_model.py
+# # DAY 6 - RANDOM FOREST MODEL TRAINING (BEGINNER FRIENDLY)
 
 import pandas as pd
 import os

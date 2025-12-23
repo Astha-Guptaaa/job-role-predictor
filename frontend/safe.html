@@ -1,8 +1,4 @@
-// dashboard.js
-// =======================
-// AUTH + PROFILE LOAD
-// =======================
-window.onload = async () => {
+<!-- window.onload = async () => {
     const token = localStorage.getItem("token");
     const googleUser = JSON.parse(localStorage.getItem("googleUser") || "null");
 
@@ -28,47 +24,49 @@ window.onload = async () => {
 
         const user = result.user;
 
-        // Welcome
         document.getElementById("user_name").textContent =
             user.username || user.email;
 
-        // Profile data
         document.getElementById("name").textContent = user.username || "-";
         document.getElementById("email").textContent = user.email || "-";
-        document.getElementById("about").textContent = user.about || "-";
-        
-        // ✅ Education should come from education object
-        const edu = user.education || {};
-        document.getElementById("degree").textContent = edu.degree || "-";
-        document.getElementById("specialization").textContent = edu.specialization || "-";
-        document.getElementById("cgpa").textContent = edu.cgpa || "-";
+        document.getElementById("degree").textContent = user.degree || "-";
+        document.getElementById("specialization").textContent = user.specialization || "-";
+        document.getElementById("cgpa").textContent = user.cgpa || "-";
         document.getElementById("certifications").textContent =
-            (edu.certifications && edu.certifications.join(", ")) || "-";
+            user.certifications || "-";
 
-        // Google image
         if (googleUser?.picture) {
             const img = document.getElementById("profile_pic");
             img.src = googleUser.picture;
             img.style.display = "block";
         }
 
+        // ✅ LOAD HISTORY ONLY ONCE
+        loadPredictionHistory();
+
     } catch {
         alert("Backend not running");
     }
 };
 
+
 // =======================
-// EDIT PROFILE
+// EDIT PROFILE in dashboard.js
 // =======================
 document.getElementById("editBtn").onclick = () => {
     document.getElementById("editForm").style.display = "block";
 
     document.getElementById("edit_name").value =
         document.getElementById("name").innerText;
-    document.getElementById("edit_about").value =
-        document.getElementById("about").innerText === "-" ? "" :
-         document.getElementById("about").innerText;
-    };
+    document.getElementById("edit_degree").value =
+        document.getElementById("degree").innerText === "-" ? "" : document.getElementById("degree").innerText;
+    document.getElementById("edit_specialization").value =
+        document.getElementById("specialization").innerText === "-" ? "" : document.getElementById("specialization").innerText;
+    document.getElementById("edit_cgpa").value =
+        document.getElementById("cgpa").innerText === "-" ? "" : document.getElementById("cgpa").innerText;
+    document.getElementById("edit_certifications").value =
+        document.getElementById("certifications").innerText === "-" ? "" : document.getElementById("certifications").innerText;
+};
 
 document.getElementById("saveBtn").onclick = async () => {
     const token = localStorage.getItem("token");
@@ -76,8 +74,17 @@ document.getElementById("saveBtn").onclick = async () => {
 
     const body = {
         username: document.getElementById("edit_name").value.trim(),
-        about: document.getElementById("edit_about").value.trim(),
+        degree: document.getElementById("edit_degree").value.trim(),
+        specialization: document.getElementById("edit_specialization").value.trim(),
+        cgpa: document.getElementById("edit_cgpa").value.trim(),
+        certifications: document.getElementById("edit_certifications").value.trim()
     };
+
+    if (body.cgpa && (isNaN(body.cgpa) || body.cgpa < 0 || body.cgpa > 10)) {
+        msg.innerText = "CGPA must be between 0–10";
+        msg.style.color = "red";
+        return;
+    }
 
     const res = await fetch("http://127.0.0.1:5000/profile/edit", {
         method: "PATCH",
@@ -108,31 +115,16 @@ document.getElementById("logoutBtn").onclick = () => {
     window.location.href = "login.html";
 };
 
-// =======================
-// PROFILE
-// =======================
-document.getElementById("profileBtn").onclick = () => {
-    window.location.href = "profile.html";
-};
-
-
-
-// ================== JOB PREDICTION (FINAL FIX) ==================
-
-// 🔒 store current prediction safely
-let latestPrediction = null;
-
-
-// ------------------ PREDICT BUTTON ------------------
-document.getElementById("predictBtn").addEventListener("click", async (e) => {
-    e.preventDefault();   // ❌ stop page reload
-
+// ------------------ JOB PREDICTION ------------------
+document.querySelector(".predict-btn").addEventListener("click", async () => {
+    console.log("🔥 Predict button clicked");
     const token = localStorage.getItem("token");
 
     const degree = document.getElementById("degree").innerText;
     const specialization = document.getElementById("specialization").innerText;
     const cgpaText = document.getElementById("cgpa").innerText;
     const cgpa = cgpaText === "-" ? null : Number(cgpaText);
+
     const certText = document.getElementById("certifications").innerText;
 
     if (degree === "-" || specialization === "-") {
@@ -147,7 +139,10 @@ document.getElementById("predictBtn").addEventListener("click", async (e) => {
         certifications: certText === "-" ? [] : certText.split(",").map(c => c.trim())
     };
 
-    try {
+    try {console.log("🔥 Sending prediction request", payload);
+        console.log("🔑 TOKEN:", token);
+
+
         const res = await fetch("http://127.0.0.1:5000/predict-job-role", {
             method: "POST",
             headers: {
@@ -164,34 +159,20 @@ document.getElementById("predictBtn").addEventListener("click", async (e) => {
             return;
         }
 
-        // ✅ save current prediction in JS memory
-        latestPrediction = data.all_predictions;
-
-        // ✅ also save in browser (VERY IMPORTANT)
-        localStorage.setItem("latestPrediction", JSON.stringify(latestPrediction));
-
-        // ✅ show immediately
-        renderPrediction(latestPrediction);
-
-        // ✅ update history list only
+        renderPrediction(data.all_predictions);
         loadPredictionHistory();
 
-    } catch (err) {
-        console.error(err);
+    } catch {
         alert("Prediction server error");
     }
 });
 
-
-// ------------------ RENDER CURRENT PREDICTION ------------------
 function renderPrediction(recommendations) {
-
     const resultBox = document.getElementById("predictionResult");
     const emptyText = document.getElementById("noPredictionText");
 
     emptyText.style.display = "none";
     resultBox.style.display = "block";
-
     resultBox.innerHTML = "<h4>Latest Prediction</h4>";
 
     recommendations.forEach((rec, index) => {
@@ -211,49 +192,4 @@ function renderPrediction(recommendations) {
             </div>
         `;
     });
-}
-
-
-// ------------------ LOAD HISTORY ONLY ------------------
-function loadPredictionHistory() {
-
-    fetch("http://127.0.0.1:5000/prediction-history", {
-        headers: {
-            "Authorization": "Bearer " + localStorage.getItem("token")
-        }
-    })
-    .then(res => res.json())
-    .then(data => {
-
-        const historyDiv = document.getElementById("predictionHistory");
-        historyDiv.innerHTML = "";
-
-        if (!data || data.length === 0) return;
-
-        historyDiv.innerHTML = "<h4>Previous Predictions</h4>";
-
-        data.slice().reverse().forEach(item => {
-            historyDiv.innerHTML += `
-                <div style="margin-bottom:8px;">
-                    <strong>${item.predictions?.[0]?.job_role}</strong><br>
-                    <small>${item.timestamp}</small>
-                </div>
-            `;
-        });
-    })
-    .catch(err => console.error(err));
-}
-
-
-// ------------------ PAGE LOAD ------------------
-document.addEventListener("DOMContentLoaded", () => {
-
-    // 🔁 restore prediction after refresh/navigation
-    const saved = localStorage.getItem("latestPrediction");
-    if (saved) {
-        latestPrediction = JSON.parse(saved);
-        renderPrediction(latestPrediction);
-    }
-
-    loadPredictionHistory();
-});
+} -->

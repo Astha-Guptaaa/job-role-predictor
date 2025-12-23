@@ -1,15 +1,15 @@
 # backend/app.py
 from flask import Flask, request, jsonify
 from flask_cors import CORS
+import joblib
+import numpy as np
 import jwt
-import datetime
+from datetime import datetime, timedelta
 import json
 import os
 import re
-import datetime
 import logging
 import bcrypt
-import pickle
 from functools import wraps
 from google.oauth2 import id_token
 from google.auth.transport.requests import Request
@@ -24,7 +24,7 @@ CORS(app)
 
 # Flask secrets
 app.secret_key = "mysecretkey"  # move to .env in production
-
+ 
 # JWT configuration (ALL REQUIRED KEYS)
 app.config["JWT_SECRET_KEY"] = "super-secret-key"
 app.config["JWT_TOKEN_LOCATION"] = ["headers"]
@@ -33,8 +33,15 @@ app.config["JWT_HEADER_TYPE"] = "Bearer"
 
 # File paths
 USERS_FILE = os.path.join(os.path.dirname(__file__), "users.json")
-model = pickle.load(open("models/job_model.pkl", "rb"))
-vectorizer = pickle.load(open("models/vectorizer.pkl", "rb"))
+MODEL_PATH = "models/job_model.pkl"
+VECTORIZER_PATH = "models/vectorizer.pkl"
+
+model = joblib.load(MODEL_PATH)
+vectorizer = joblib.load(VECTORIZER_PATH)
+
+print("✅ ML Model & Vectorizer Loaded")
+
+
 # Logging
 logging.basicConfig(level=logging.INFO)
 logger = logging.getLogger(__name__)
@@ -74,7 +81,7 @@ def check_password(password: str, hashed: str) -> bool:
 def generate_token(email: str):
     payload = {
         "email": email,
-        "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=2)
+        "exp": datetime.utcnow() + timedelta(hours=2)
     }
     token = jwt.encode(payload, app.secret_key, algorithm="HS256")
     if isinstance(token, bytes):
@@ -134,6 +141,8 @@ def validate_profile_patch(data: dict):
                 return "CGPA must be between 0 and 10"
         except Exception:
             return "Invalid CGPA value"
+    if "about" in data and len(data["about"].strip()) > 500:
+        return "About section must be under 500 characters"
     # certifications: optional, but if present can be string
     return None
 
@@ -167,6 +176,7 @@ def signup():
             "username": username,
             "email": email,
             "password": hashed_pass,
+            "about": "",
             "degree": "",
             "specialization": "",
             "cgpa": "",
@@ -242,14 +252,9 @@ def edit_profile(decoded):
                 # Only update fields provided
                 if "username" in data and data["username"] is not None:
                     user["username"] = data["username"]
-                if "degree" in data and data["degree"] is not None:
-                    user["degree"] = data["degree"]
-                if "specialization" in data and data["specialization"] is not None:
-                    user["specialization"] = data["specialization"]
-                if "cgpa" in data and data["cgpa"] is not None:
-                    user["cgpa"] = data["cgpa"]
-                if "certifications" in data and data["certifications"] is not None:
-                    user["certifications"] = data["certifications"]
+                if "about" in data and data["about"] is not None:
+                    user["about"] = data["about"]
+
                 updated = True
                 break
 
@@ -288,10 +293,6 @@ def google_login():
                 "username": username,
                 "email": email,
                 "password": None,
-                "degree": "",
-                "specialization": "",
-                "cgpa": "",
-                "certifications": ""
             }
             users.append(user)
             save_users(users)
@@ -307,30 +308,27 @@ def google_login():
         logger.exception("Google login error: %s", str(e))
         return jsonify({"error": "Internal server error"}), 500
 
-# ---------------- Add Education Details ----------------
+# ---------------- Add / Update Education Details ----------------
 @app.post("/education/add")
 @token_required
 def add_education(decoded):
     try:
         data = request.json or {}
 
-        # -------- Read fields from frontend --------
+        # -------- Read fields --------
         degree = (data.get("degree") or "").strip()
         specialization = (data.get("specialization") or "").strip()
         cgpa_raw = data.get("cgpa")
         year_raw = data.get("year")
-
         college_tier = (data.get("collegeTier") or "").strip()
         internship = (data.get("internship") or "").strip()
         projects = (data.get("projects") or "").strip()
         backlogs = (data.get("backlogs") or "").strip()
-
-        # certifications will come as list from checkbox UI
         certifications = data.get("certifications", [])
 
         # -------- Validation --------
         errors = {}
-        current_year = datetime.datetime.now().year
+        current_year = datetime.now().year
 
         if not degree:
             errors["degree"] = "Degree is required"
@@ -338,15 +336,13 @@ def add_education(decoded):
         if not specialization:
             errors["specialization"] = "Specialization is required"
 
-        # CGPA
         try:
             cgpa = float(cgpa_raw)
-            if cgpa < 0 or cgpa > 10:
+            if not (0 <= cgpa <= 10):
                 errors["cgpa"] = "CGPA must be between 0 and 10"
         except:
             errors["cgpa"] = "CGPA must be a number"
 
-        # Graduation year
         try:
             year = int(year_raw)
             if year < 2010 or year > current_year:
@@ -354,50 +350,52 @@ def add_education(decoded):
         except:
             errors["year"] = "Invalid graduation year"
 
-        if not college_tier:
-            errors["collegeTier"] = "College tier is required"
-
-        if internship not in ["Yes", "No"]:
-            errors["internship"] = "Select internship experience"
-
-        if projects not in ["0-1", "2-3", "4+"]:
-            errors["projects"] = "Select number of projects"
-
-        if backlogs not in ["0", "1", "2+"]:
-            errors["backlogs"] = "Select backlogs"
-
         if errors:
             return jsonify({"errors": errors}), 400
 
-        # -------- Find user using token --------
-        user_email = decoded.get("email")
+        # -------- Find user --------
         users = load_users()
-        user = next((u for u in users if u.get("email") == user_email), None)
+        email = decoded["email"]
+        user = next((u for u in users if u.get("email") == email), None)
 
         if not user:
             return jsonify({"error": "User not found"}), 404
 
-        # -------- Save education data --------
-        user["degree"] = degree
-        user["specialization"] = specialization
-        user["cgpa"] = cgpa
-        user["graduation_year"] = year
-        user["college_tier"] = college_tier
-        user["internship"] = internship
-        user["projects"] = projects
-        user["backlogs"] = backlogs
-        user["certifications"] = certifications  # list
+        # -------- SAVE UNDER education OBJECT (🔥 FIX) --------
+        user["education"] = {
+            "degree": degree,
+            "specialization": specialization,
+            "cgpa": cgpa,
+            "year": year,
+            "collegeTier": college_tier,
+            "internship": internship,
+            "projects": projects,
+            "backlogs": backlogs,
+            "certifications": certifications
+        }
 
         save_users(users)
 
-        return jsonify({
-            "message": "Education details saved successfully"
-        }), 200
+        return jsonify({"message": "Education details saved successfully"}), 200
 
     except Exception as e:
-        logger.exception("Education add error: %s", str(e))
+        logger.exception("Education add error")
         return jsonify({"error": "Internal server error"}), 500
 
+
+# ---------------- Get Education Details ----------------
+@app.route("/education/get", methods=["GET"])
+@token_required
+def get_education(decoded):
+    email = decoded["email"]
+
+    users = load_users()
+    user = next((u for u in users if u.get("email") == email), None)
+
+    if not user or "education" not in user:
+        return jsonify({"education": None})
+
+    return jsonify({"education": user["education"]})
 
 
 # ---------------- Skills Add ----------------
@@ -447,9 +445,234 @@ def get_skills(email):
         return jsonify({"error": "Server error"}), 500
 
 
+
+
+@app.route("/prediction-history", methods=["GET"])
+@token_required
+def get_prediction_history(decoded):
+
+    user_email = decoded["email"]   # 🔐 Logged-in user
+
+    # If file doesn't exist → no history
+    if not os.path.exists("prediction_history.json"):
+        return jsonify([])
+
+    # Safely read JSON
+    try:
+        with open("prediction_history.json", "r") as f:
+            all_history = json.load(f)
+    except json.JSONDecodeError:
+        return jsonify([])
+
+    # ✅ FILTER ONLY CURRENT USER'S DATA
+    user_history = [
+        item for item in all_history
+        if item.get("user_id") == user_email
+    ]
+
+    return jsonify(user_history)
+
+
+
+# -----------------------------
+# JOB ROLE MAPPING (REALISTIC)
+# -----------------------------
+JOB_ROLE_MAP = {
+ 21: 'Database Administrator',
+ 17: 'Cybersecurity Analyst',
+ 62: 'Software Engineer',
+ 41: 'Machine Learning Engineer',
+ 71: 'Web Developer',
+ 64: 'Systems Analyst',
+ 0: 'AI Researcher',
+ 18: 'Data Analyst',
+ 12: 'Cloud Architect',
+ 1: 'AI Specialist',
+ 56: 'Robotics Engineer',
+ 19: 'Data Science',
+ 70: 'Web Designing',
+ 37: 'Java Developer',
+ 57: 'SAP Developer',
+ 6: 'Automation Testing',
+ 26: 'Electrical Engineering',
+ 54: 'Python Developer',
+ 23: 'DevOps Engineer',
+ 44: 'Network Security Engineer',
+ 20: 'Database',
+ 35: 'Hadoop',
+ 25: 'ETL Developer',
+ 24: 'DotNet Developer',
+ 8: 'Blockchain',
+ 66: 'Testing',
+ 31: 'Fitness Coach',
+ 50: 'Physician',
+ 30: 'Financial Analyst',
+ 63: 'Supply Chain Manager',
+ 4: 'Architect',
+ 46: 'Operations Manager',
+ 68: 'Urban Planner',
+ 48: 'Personal Trainer',
+ 7: 'Biomedical Engineer',
+ 45: 'Nurse',
+ 52: 'Product Manager',
+ 14: 'Content Writer',
+ 49: 'Pharmacist',
+ 10: 'Chef',
+ 53: 'Psychologist',
+ 11: 'Civil Engineer',
+ 2: 'Accountant',
+ 32: 'Graphic Designer',
+ 22: 'Dentist',
+ 51: 'Pilot',
+ 67: 'UX Designer',
+ 65: 'Teacher',
+ 34: 'HR Specialist',
+ 69: 'Veterinarian',
+ 28: 'Environmental Scientist',
+ 40: 'Legal Consultant',
+ 60: 'Sales Representative',
+ 58: 'SEO Specialist',
+ 9: 'Business Analyst',
+ 16: 'Customer Service Representative',
+ 42: 'Marketing Manager',
+ 61: 'Social Worker',
+ 27: 'Electrician',
+ 38: 'Journalist',
+ 29: 'Event Planner',
+ 39: 'Lawyer',
+ 43: 'Mechanical Engineer',
+ 13: 'Construction Manager',
+ 55: 'Research Scientist',
+ 15: 'Creative Director',
+ 33: 'HR',
+ 3: 'Advocate',
+ 5: 'Arts',
+ 59: 'Sales',
+ 36: 'Health and fitness',
+ 47: 'PMO'
+}
+
+HISTORY_FILE = "prediction_history.json"
+
+# -----------------------------
+# PREDICT JOB ROLE API
+# -----------------------------
+@app.route("/predict-job-role", methods=["POST"])
+@token_required
+def predict_job_role(decoded_user):
+
+    try:
+        data = request.get_json()
+        
+        users = load_users()
+        user = next((u for u in users if u.get("email") == decoded_user["email"]), None)
+
+        if not user or "education" not in user:
+            return jsonify({
+                "status": "error",
+                "message": "Education details not found"
+            }), 400
+
+        education = user["education"]
+        skills = user.get("skills", {})
+
+        degree = education.get("degree", "")
+        specialization = education.get("specialization", "")
+        cgpa = education.get("cgpa", "")
+        certifications = education.get("certifications", [])
+
+        if not degree or not specialization:
+            return jsonify({
+                "status": "error",
+                "message": "Degree and specialization are required"
+            }), 400
+
+        skills_text = " ".join([
+            f"{k}_{v}" for k, v in skills.items()
+        ])
+
+        text_input = (
+            f"{degree} {specialization} CGPA {cgpa} "
+            + " ".join(certifications)
+            + " "
+            + skills_text
+        )
+
+        vectorized_input = vectorizer.transform([text_input])
+        probabilities = model.predict_proba(vectorized_input)[0]
+        classes = model.classes_
+
+        top_indices = np.argsort(probabilities)[::-1][:5]
+        
+        top_probs = probabilities[top_indices]
+        normalized_probs = (top_probs / top_probs.sum()) * 100
+        
+        recommendations = []
+        for idx, conf in zip(top_indices, normalized_probs):
+            encoded_label = classes[idx]
+            recommendations.append({
+                "job_role": JOB_ROLE_MAP.get(encoded_label, f"Role_{encoded_label}"),
+                "confidence": round(float(conf), 2)
+            })
+
+        new_entry = {
+            "user_id": decoded_user["email"],
+            "input_details": {
+                "degree": degree,
+                "specialization": specialization,
+                "cgpa": cgpa,
+                "certifications": certifications
+            },
+            "predictions": recommendations,
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+        }
+
+        if os.path.exists(HISTORY_FILE):
+            with open(HISTORY_FILE, "r") as f:
+                history_data = json.load(f)
+        else:
+            history_data = []
+
+        updated = False
+        for item in history_data:
+
+    # 🔒 skip old entries that don’t belong to logged-in users
+            if item.get("user_id") != new_entry["user_id"]:
+               continue
+
+            if item.get("input_details") == new_entry["input_details"]:
+                item["predictions"] = new_entry["predictions"]
+                item["timestamp"] = new_entry["timestamp"]
+                updated = True
+                break
+
+
+        if not updated:
+            history_data.append(new_entry)
+
+        with open(HISTORY_FILE, "w") as f:
+            json.dump(history_data, f, indent=4)
+
+        return jsonify({
+            "status": "success",
+            "top_recommendation": recommendations[0],
+            "alternative_careers": recommendations[1:],
+            "all_predictions": recommendations
+        }), 200
+
+    except Exception as e:
+        import traceback
+        print("🔥 PREDICTION ERROR 🔥")
+        traceback.print_exc()
+
+        return jsonify({
+            "status": "error",
+            "message": str(e)
+        }), 500
+
+
 # ---------------- Run Server ----------------
 if __name__ == "__main__":
     if not os.path.exists(USERS_FILE):
         save_users([])
     app.run(debug=True)
-  
