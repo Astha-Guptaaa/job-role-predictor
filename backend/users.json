@@ -1,31 +1,121 @@
 [
   {
-    "username": "Astha Gupta",
-    "email": "astha7534@gmail.com",
-    "password": null,
-    "about": "I am a final year student.",
+    "username": "Admin",
+    "email": "admin@gmail.com",
+    "password": "$2b$12$OcYizPmg3zHw6X2BetFwbOxlxE//xJdups/0On/mamSHEXvnloYn6",
+    "role": "admin",
+    "about": "",
+    "degree": "",
+    "specialization": "",
+    "cgpa": "",
+    "certifications": "",
     "education": {
       "degree": "B.Tech",
       "specialization": "Data Science",
-      "cgpa": 9.1,
+      "cgpa": 9.0,
+      "year": 2025,
+      "collegeTier": "Tier 1",
+      "internship": "Yes",
+      "projects": "0-1",
+      "backlogs": "0",
+      "certifications": [
+        "Proficient in SQL, R, Data Visualization, Statistics, Excel"
+      ]
+    }
+  },
+  {
+    "username": "Astha Gupta",
+    "email": "astha7534@gmail.com",
+    "password": null,
+    "education": {
+      "degree": "M.Tech",
+      "specialization": "AI & ML",
+      "cgpa": 8.9,
       "year": 2025,
       "collegeTier": "Tier 2",
+      "internship": "Yes",
+      "projects": "4+",
+      "backlogs": "0",
+      "certifications": [
+        "Microsoft Certified",
+        "AWS Certified",
+        "Data Visualization, Data Science, Machine Learning, Python"
+      ]
+    },
+    "skills": {
+      "programming": 8,
+      "data_analysis": 5,
+      "ml": 5,
+      "web": 8,
+      "sql": 8,
+      "cloud": 5,
+      "communication": 5,
+      "problem_solving": 9
+    },
+    "about": "Seeking an opportunity to apply my skills in building applications. My tech stack includes HTML, CSS, JavaScript, React.js, Python, Flask, and MySQL."
+  },
+  {
+    "username": "Astha Gupta",
+    "email": "asthag414@gmail.com",
+    "password": null,
+    "education": {
+      "degree": "B.Tech",
+      "specialization": "Data Science",
+      "cgpa": 8.9,
+      "year": 2016,
+      "collegeTier": "Tier 1",
       "internship": "Yes",
       "projects": "2-3",
       "backlogs": "0",
       "certifications": [
-        "Data Science Certification"
+        "Data Science Certification",
+        "Proficient in SQL, R, Data Visualization, Statistics, Excel"
       ]
     },
+    "about": "Senior-level experience in the field. Holds a Masters degree",
     "skills": {
-      "programming": 10,
-      "data_analysis": 10,
-      "ml": 10,
-      "web": 0,
-      "sql": 0,
-      "cloud": 0,
+      "programming": 8,
+      "data_analysis": 5,
+      "ml": 9,
+      "web": 5,
+      "sql": 5,
+      "cloud": 5,
       "communication": 0,
-      "problem_solving": 0
+      "problem_solving": 5
     }
+  },
+  {
+    "username": "User1",
+    "email": "new@gmail.com",
+    "password": "$2b$12$PLoIHlvvdQakTOVz0S4RgO6c2aEvboUxv6ik0y7Nx60qUn.zCexde",
+    "about": "",
+    "degree": "",
+    "specialization": "",
+    "cgpa": "",
+    "certifications": "",
+    "education": {
+      "degree": "B.Tech",
+      "specialization": "Computer Science",
+      "cgpa": 8.9,
+      "year": 2025,
+      "collegeTier": "Tier 1",
+      "internship": "Yes",
+      "projects": "0-1",
+      "backlogs": "0",
+      "certifications": [
+        "Microsoft Certified",
+        "Python Fundamental"
+      ]
+    }
+  },
+  {
+    "username": "User@",
+    "email": "user2@gmail.com",
+    "password": "$2b$12$P9B8IUxHkeCoR5pBUAkz5u9hZ5ykakdF3ro4jDzecz40EOfkDfu0e",
+    "about": "",
+    "degree": "",
+    "specialization": "",
+    "cgpa": "",
+    "certifications": ""
   }
 ]

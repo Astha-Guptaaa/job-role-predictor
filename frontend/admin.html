@@ -1,0 +1,52 @@
+<!--admin.html-->
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Admin Panel</title>
+
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+<div class="admin-navbar">
+  <div class="logo">Edu2Job – Admin</div>
+
+  <div class="nav-links">
+    <a href="admin.html">Dashboard</a>
+    <a href="admin_logs.html">Logs & Feedback</a>
+    <button onclick="logout()">Logout</button>
+  </div>
+</div>
+
+
+<div class="admin-container">
+  <h2>Admin Dashboard</h2>
+
+<div class="section">
+    <h3>Upload Dataset (CSV)</h3>
+    <input type="file" id="datasetFile" accept=".csv">
+    <br><br>
+    <button onclick="uploadDataset()">Upload Dataset</button>
+</div>
+
+
+<div class="section">
+    <h3>Retrain ML Model</h3>
+    <button onclick="retrainModel()">Retrain Model</button>
+</div>
+
+<p class="status" id="adminStatus"></p>
+  
+<div class="section">
+  <h3>Prediction Logs</h3>
+  <div id="logs"></div>
+  <a href="admin_logs.html">
+    <button>View Logs & Feedback</button>
+</a>
+</div>
+
+</div>
+
+
+<script src="admin.js"></script>
+</body>
+</html>

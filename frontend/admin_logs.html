@@ -1,0 +1,66 @@
+<!--admin_logs.html-->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Admin Logs & Feedback</title>
+    <link rel="stylesheet" href="admin_logs.css">
+</head>
+<body>
+<div class="admin-navbar">
+  <div class="logo">Edu2Job – Admin</div>
+
+  <div class="nav-links">
+    <a href="admin.html">Dashboard</a>
+    <a href="admin_logs.html">Logs & Feedback</a>
+    <button onclick="logout()">Logout</button>
+  </div>
+</div>
+
+
+<div class="container">
+    <h2>Admin – Prediction Logs & Feedback</h2>
+
+    <!-- Prediction Logs -->
+    <div class="card">
+        <h3>Prediction Logs</h3>
+        <button onclick="loadLogs()">Load Logs</button>
+
+        <table id="logsTable">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Predicted Role</th>
+                    <th>Confidence</th>
+                    <th>Timestamp</th>
+                    <th>Status</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+
+    <!-- Feedback Section -->
+    <div class="card">
+        <h3>User Feedback</h3>
+        <button onclick="loadFeedback()">Load Feedback</button>
+
+        <table id="feedbackTable">
+            <thead>
+                <tr>
+                    <th>User</th>
+                    <th>Role</th>
+                    <th>Rating</th>
+                    <th>Comment</th>
+                    <th>Time</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+    </div>
+</div>
+
+<script src="admin_logs.js"></script>
+</body>
+</html>

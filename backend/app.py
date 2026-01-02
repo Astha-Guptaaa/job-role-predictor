@@ -8,13 +8,14 @@ from datetime import datetime, timedelta
 import json
 import os
 import re
+import pandas as pd
 import logging
 import bcrypt
 from functools import wraps
 from google.oauth2 import id_token
 from google.auth.transport.requests import Request
 from flask_jwt_extended import jwt_required, get_jwt_identity
-
+from insights import generate_insights 
 
 # ---------- Configuration ----------
 app = Flask(__name__)
@@ -78,15 +79,14 @@ def check_password(password: str, hashed: str) -> bool:
         return False
 
 # ---------- Token helpers ----------
-def generate_token(email: str):
+def generate_token(data):
     payload = {
-        "email": email,
-        "exp": datetime.utcnow() + timedelta(hours=2)
+        "email": data["email"],
+        "role": data.get("role", "user"),
+        "exp": datetime.utcnow() + timedelta(hours=12)
     }
-    token = jwt.encode(payload, app.secret_key, algorithm="HS256")
-    if isinstance(token, bytes):
-        token = token.decode("utf-8")
-    return token
+    return jwt.encode(payload, app.secret_key, algorithm="HS256")
+
 
 def verify_token(token: str):
     try:
@@ -189,6 +189,7 @@ def signup():
         logger.exception("Signup error: %s", str(e))
         return jsonify({"error": "Internal server error"}), 500
 
+
 # ---------------- Login ----------------
 @app.post("/login")
 def login():
@@ -211,8 +212,15 @@ def login():
         if not stored_hash or not check_password(password, stored_hash):
             return jsonify({"error": "Invalid username or password"}), 401
 
-        token = generate_token(user.get("email"))
-        return jsonify({"token": token})
+        token = generate_token({
+                "email": user.get("email"),
+                 "role": user.get("role", "user")
+        })
+        return jsonify({
+            "token": token,
+            "role": user.get("role", "user")
+        })
+
     except Exception as e:
         logger.exception("Login error: %s", str(e))
         return jsonify({"error": "Internal server error"}), 500
@@ -280,7 +288,8 @@ def google_login():
         idinfo = id_token.verify_oauth2_token(
             google_token,
             Request(),
-            "576054418642-45lq2r4mt2fielkav4n84cucc4l68c0r.apps.googleusercontent.com"
+            "576054418642-45lq2r4mt2fielkav4n84cucc4l68c0r.apps.googleusercontent.com",
+            clock_skew_in_seconds=10
         )
         email = idinfo.get("email")
         username = idinfo.get("name")
@@ -297,7 +306,10 @@ def google_login():
             users.append(user)
             save_users(users)
 
-        token = generate_token(email)
+        token = generate_token({
+            "email":email,
+            "role": user.get("role", "user")
+        })
         return jsonify({"token": token, "user": {"username": username, "email": email, "picture": picture}})
 
     except ValueError as e:
@@ -572,10 +584,8 @@ def predict_job_role(decoded_user):
                 "status": "error",
                 "message": "Education details not found"
             }), 400
-
         education = user["education"]
         skills = user.get("skills", {})
-
         degree = education.get("degree", "")
         specialization = education.get("specialization", "")
         cgpa = education.get("cgpa", "")
@@ -614,7 +624,10 @@ def predict_job_role(decoded_user):
                 "job_role": JOB_ROLE_MAP.get(encoded_label, f"Role_{encoded_label}"),
                 "confidence": round(float(conf), 2)
             })
-
+        TOP_CONFIDENCE_THRESHOLD = 40
+        
+        top_confidence = recommendations[0]["confidence"]
+        is_flagged = top_confidence < TOP_CONFIDENCE_THRESHOLD
         new_entry = {
             "user_id": decoded_user["email"],
             "input_details": {
@@ -624,7 +637,8 @@ def predict_job_role(decoded_user):
                 "certifications": certifications
             },
             "predictions": recommendations,
-            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+            "timestamp": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "flagged": is_flagged
         }
 
         if os.path.exists(HISTORY_FILE):
@@ -669,6 +683,275 @@ def predict_job_role(decoded_user):
             "status": "error",
             "message": str(e)
         }), 500
+
+
+
+
+@app.route("/api/visualizations/degree-job", methods=["GET"])
+def degree_job_chart():
+    if not os.path.exists(HISTORY_FILE):
+        return jsonify({})
+
+    with open(HISTORY_FILE) as f:
+        history = json.load(f)
+
+    job_counts = {}
+
+    for record in history:
+        predictions = record.get("predictions", [])
+        for pred in predictions:
+            role = pred.get("job_role")
+            if role:
+                job_counts[role] = job_counts.get(role, 0) + 1
+
+    return jsonify(job_counts)
+
+
+@app.route("/api/visualizations/job-domain", methods=["GET"])
+def job_domain_chart():
+    if not os.path.exists(HISTORY_FILE):
+        return jsonify({})
+
+    with open(HISTORY_FILE) as f:
+        history = json.load(f)
+
+    domain_counts = {}
+
+    for record in history:
+        predictions = record.get("predictions", [])
+        for pred in predictions:
+            role = pred.get("job_role")
+            if role:
+                domain_counts[role] = domain_counts.get(role, 0) + 1
+
+    total = sum(domain_counts.values())
+    if total == 0:
+        return jsonify({})
+
+    percentages = {
+        role: round((count / total) * 100, 2)
+        for role, count in domain_counts.items()
+    }
+
+    return jsonify(percentages)
+
+
+@app.route("/api/latest-prediction", methods=["GET"])
+@token_required
+def latest_prediction(decoded):
+    email = decoded["email"]
+
+    if not os.path.exists(HISTORY_FILE):
+        return jsonify(None)
+
+    with open(HISTORY_FILE) as f:
+        history = json.load(f)
+
+    user_history = [
+        h for h in history if h.get("user_id") == email
+    ]
+
+    if not user_history:
+        return jsonify(None)
+
+    return jsonify(user_history[-1])
+
+
+
+@app.route("/admin/prediction-logs", methods=["GET"])
+@token_required
+def admin_prediction_logs(decoded):
+
+    with open("prediction_history.json") as f:
+        history = json.load(f)
+
+    logs = []
+    for h in history:
+        top = h["predictions"][0]
+        logs.append({
+            "user": h["user_id"],
+            "predicted_role": top["job_role"],
+            "confidence": top["confidence"],
+            "timestamp": h["timestamp"],
+            "flagged": h.get("flagged", False)
+        })
+
+    return jsonify(logs)
+
+
+
+FEEDBACK_FILE = "feedback.json"
+
+@app.route("/feedback", methods=["POST"])
+@token_required
+def submit_feedback(user):
+    data = request.get_json()
+
+    feedback = {
+        "user": user["email"],
+        "role": data.get("job_role"),
+        "rating": data.get("rating"),
+        "comment": data.get("comment"),
+        "timestamp": datetime.utcnow().isoformat()
+    }
+
+    feedbacks = []
+    if os.path.exists(FEEDBACK_FILE):
+        with open(FEEDBACK_FILE) as f:
+            feedbacks = json.load(f)
+
+    feedbacks.append(feedback)
+
+    with open(FEEDBACK_FILE, "w") as f:
+        json.dump(feedbacks, f, indent=2)
+
+    return jsonify({"message": "Feedback received successfully"}), 200
+
+
+
+def admin_required(f):
+    @wraps(f)
+    def decorated(current_user, *args, **kwargs):
+        if current_user.get("role") != "admin":
+            return jsonify({"error": "Admin access only"}), 403
+        return f(current_user, *args, **kwargs)
+    return decorated
+
+
+@app.route("/admin/feedback", methods=["GET"])
+@token_required
+@admin_required
+def get_feedback(user):
+    if not os.path.exists(FEEDBACK_FILE):
+        return jsonify([])
+
+    with open(FEEDBACK_FILE) as f:
+        return jsonify(json.load(f))
+
+
+
+
+@app.route("/admin/upload-dataset", methods=["POST"])
+@token_required
+# @admin_required
+def upload_dataset(user):
+    if "file" not in request.files:
+        return jsonify({"error": "No file uploaded"}), 400
+
+    file = request.files["file"]
+
+    if not file.filename.endswith(".csv"):
+        return jsonify({"error": "Only CSV allowed"}), 400
+
+    df = pd.read_csv(file)
+
+    # ✅ Basic validation
+    required_cols = {"job_role", "Resume", "job_role_encoded"}
+    if not required_cols.issubset(df.columns):
+        return jsonify({
+            "error": f"CSV must contain columns: {required_cols}"
+        }), 400
+
+    filename = f"dataset_{datetime.utcnow().strftime('%Y%m%d_%H%M%S')}.csv"
+    path = f"./datasets/{filename}"
+    df.to_csv(path, index=False)
+
+    # Optional: mark as current dataset
+    df.to_csv("./datasets/current.csv", index=False)
+
+    return jsonify({
+        "success": True,
+        "message": "Dataset uploaded successfully",
+        "version": filename
+    })
+
+
+
+@app.route("/admin/flag-prediction", methods=["POST"])
+@token_required
+def flag_prediction(decoded):
+    if decoded.get("role") != "admin":
+        return jsonify({"error": "Unauthorized"}), 403
+
+    data = request.get_json()
+    timestamp = data.get("timestamp")
+
+    if not os.path.exists(HISTORY_FILE):
+        return jsonify({"error": "No history found"}), 404
+
+    with open(HISTORY_FILE, "r") as f:
+        history = json.load(f)
+
+    updated = False
+    for h in history:
+        if str(h.get("timestamp")) == str(timestamp):
+            h["flagged"] = True
+            updated = True
+            break
+
+    if not updated:
+        return jsonify({"error": "Prediction not found"}), 404
+
+    with open(HISTORY_FILE, "w") as f:
+        json.dump(history, f, indent=4)
+
+    return jsonify({"message": "Prediction flagged successfully"})
+
+
+
+
+@app.route("/admin/retrain-model", methods=["POST"])
+@token_required
+@admin_required
+def retrain_model(user):
+    # 🔁 Simulated retraining pipeline
+    try:
+        # Example future steps:
+        # load dataset
+        # preprocess
+        # train model
+        # save model
+
+        return jsonify({
+            "success": True,
+            "status": "Retraining started",
+            "note": "Model retraining runs asynchronously"
+        })
+
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+
+@app.route("/api/career-insights", methods=["POST"])
+@token_required
+def career_insights(decoded_user):
+    users = load_users()
+    user = next(
+        (u for u in users if u.get("email") == decoded_user["email"]),
+        None
+    )
+
+    if not user or "education" not in user:
+        return jsonify({"error": "Education not found"}), 400
+
+    edu = user["education"]
+
+    insight = generate_insights({
+        "degree": edu.get("degree"),
+        "specialization": edu.get("specialization"),
+        "cgpa": edu.get("cgpa")
+    })
+
+    return jsonify({
+        "career_insight": {
+            # 🔥 USE DATA-DRIVEN MESSAGE
+            "message": insight.get("message", "Career insight not available.")
+        },
+        # 🔁 Alternative career paths
+        "alternative_roles": list(insight.get("top_roles", {}).keys())
+    })
+
+
 
 
 # ---------------- Run Server ----------------

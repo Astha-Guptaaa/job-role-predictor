@@ -1,0 +1,108 @@
+body {
+    font-family: Arial, sans-serif;
+    background: #f4f6f8;
+    margin: 0;
+    padding: 15px;
+}
+
+.container {
+    max-width: 1200px;
+    margin: 30px auto;
+    width: 100%;
+    min-height: 100vh;
+    padding: 10px;
+    background: #f4f6f9;
+    border-radius: 10px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    
+}
+
+h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.card {
+  background: white;
+  padding: 20px;
+  margin-bottom: 40px;
+  border-radius: 12px;
+  box-shadow: 0 10px 25px rgba(0,0,0,0.08);
+}
+
+
+button {
+    padding: 8px 14px;
+    background: #007bff;
+    color: #fff;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    margin-bottom: 10px;
+}
+
+button:hover {
+    background: #ea5127;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+
+th, td {
+    padding: 10px;
+    border: 1px solid #ddd;
+    text-align: center;
+}
+
+table {
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+th {
+  background: #1f2937;
+  color: white;
+}
+
+
+.admin-navbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background: #1f2937;
+  padding: 14px 30px;
+  color: white;
+}
+
+.admin-navbar .logo {
+  font-size: 18px;
+  font-weight: bold;
+}
+
+.admin-navbar .nav-links {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+}
+
+.admin-navbar a {
+  color: #e5e7eb;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.admin-navbar a:hover {
+  color: #60a5fa;
+}
+
+.admin-navbar button {
+  background: #ef4444;
+  border: none;
+  padding: 6px 14px;
+  border-radius: 6px;
+  color: white;
+  cursor: pointer;
+}

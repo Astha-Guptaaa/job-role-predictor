@@ -2,6 +2,7 @@
 // =======================
 // AUTH + PROFILE LOAD
 // =======================
+const BASE_URL = "http://127.0.0.1:5000";
 window.onload = async () => {
     const token = localStorage.getItem("token");
     const googleUser = JSON.parse(localStorage.getItem("googleUser") || "null");
@@ -164,6 +165,18 @@ document.getElementById("predictBtn").addEventListener("click", async (e) => {
             return;
         }
 
+        const predictions =
+          data.all_predictions || data.predictions || data.result;
+
+        if (!predictions || predictions.length === 0) {
+          alert("Prediction data missing");
+          return;
+        }
+
+        latestPrediction = predictions;
+        localStorage.setItem("latestPrediction", JSON.stringify(predictions));
+
+
         // ✅ save current prediction in JS memory
         latestPrediction = data.all_predictions;
 
@@ -176,10 +189,29 @@ document.getElementById("predictBtn").addEventListener("click", async (e) => {
         // ✅ update history list only
         loadPredictionHistory();
 
+        loadCareerInsights();
+
+
     } catch (err) {
         console.error(err);
         alert("Prediction server error");
     }
+});
+
+fetch(`${BASE_URL}/profile`, {
+  headers: {
+    "Authorization": `Bearer ${localStorage.getItem("token")}`
+  }
+})
+.then(res => res.json())
+.then(user => {
+  document.getElementById("username").innerText = user.username;
+
+  if (user.role === "admin") {
+    document.getElementById("adminBtn").style.display = "block";
+  } else {
+    document.getElementById("adminBtn").style.display = "none";
+  }
 });
 
 
@@ -256,4 +288,163 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     loadPredictionHistory();
+    loadCareerInsights();
+
 });
+
+async function loadCharts() {
+
+  const barData = await fetch("http://127.0.0.1:5000/api/visualizations/degree-job")
+    .then(res => res.json());
+
+  new Chart(document.getElementById("degreeJobChart"), {
+    type: "bar",
+    data: {
+      labels: Object.keys(barData),
+      datasets: [{
+        label: "Predicted Count",
+        data: Object.values(barData),
+        backgroundColor: "#3b82f6"
+      }]
+    },
+    options: {
+      plugins: { legend: { display: false } },
+      scales: {
+        y: { beginAtZero: true }
+      }
+    }
+  });
+
+  const pieData = await fetch("http://127.0.0.1:5000/api/visualizations/job-domain")
+    .then(res => res.json());
+
+  new Chart(document.getElementById("jobDomainChart"), {
+    type: "doughnut",
+    data: {
+      labels: Object.keys(pieData),
+      datasets: [{
+        data: Object.values(pieData),
+        backgroundColor: [
+         "#0f172a", // very dark navy
+  "#1e293b",
+  "#1e3a8a",
+  "#1d4ed8",
+  "#2563eb",
+  "#3b82f6",
+  "#60a5fa",
+  "#93c5fd",
+  "#bfdbfe",
+  "#dbeafe",
+
+  "#082f49",
+  "#0c4a6e",
+  "#0369a1",
+  "#0284c7",
+  "#0ea5e9",
+  "#38bdf8",
+  "#7dd3fc",
+  "#bae6fd",
+  "#e0f2fe",
+  "#f0f9ff"
+        ]
+      }]
+    },
+    options: {
+      plugins: {
+        legend: { position: "bottom" }
+      }
+    }
+  });
+}
+
+loadCharts();
+
+
+
+
+
+// =============================
+// CAREER INSIGHTS
+// =============================
+
+function displayCareerInsights(data) {
+  if (!data || !data.career_insight) {
+    document.getElementById("careerInsight").innerText =
+      "No insights available";
+    return;
+  }
+
+  // ✅ Insight message
+  document.getElementById("careerInsight").innerText =
+    data.career_insight.message;
+
+  // ✅ Alternative roles
+  const ul = document.getElementById("alternativeRoles");
+  ul.innerHTML = "";
+
+  data.alternative_roles.forEach(role => {
+    const li = document.createElement("li");
+    li.innerText = role;
+    ul.appendChild(li);
+  });
+}
+
+
+async function loadCareerInsights() {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) return;
+
+    const res = await fetch(
+      "http://127.0.0.1:5000/api/career-insights",
+      {
+        method: "POST",
+        headers: {
+          "Authorization": `Bearer ${token}`
+        }
+      }
+    );
+
+    const data = await res.json();
+    displayCareerInsights(data);
+
+  } catch (err) {
+    console.error("Career Insights load failed", err);
+  }
+}
+
+
+
+document.getElementById("adminBtn")?.addEventListener("click", () => {
+  window.location.href = "http://127.0.0.1:5000/admin";
+});
+
+function goToAdmin() {
+    window.location.href = "admin.html";
+}
+
+function submitFeedback() {
+  const predictions = JSON.parse(localStorage.getItem("latestPrediction"));
+
+  fetch("http://127.0.0.1:5000/feedback", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "Authorization": `Bearer ${localStorage.getItem("token")}`
+    },
+    body: JSON.stringify({
+      job_role: predictions?.[0]?.job_role || "N/A",
+      rating: document.getElementById("rating").value,
+      comment: document.getElementById("comment").value
+    })
+  })
+  .then(res => res.json())
+  .then(data => alert(data.message));
+}
+
+
+function scrollToSection(id) {
+  document.getElementById(id).scrollIntoView({
+    behavior: "smooth"
+  });
+}

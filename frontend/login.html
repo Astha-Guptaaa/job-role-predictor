@@ -68,7 +68,7 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
             // ✅ REQUIRED FIXES
             localStorage.setItem("token", result.token);
             localStorage.setItem("email", identifier);
-
+            localStorage.setItem("role", result.role); 
             // clear google session if any
             localStorage.removeItem("googleUser");
 
@@ -76,8 +76,13 @@ document.getElementById("loginForm").addEventListener("submit", async (e) => {
             msgEl.style.color = "green";
 
             setTimeout(() => {
-                window.location.href = "dashboard.html";
+                 if (result.role === "admin") {
+                    window.location.href = "admin.html";
+                } else {
+                    window.location.href = "dashboard.html";
+                }
             }, 600);
+                
         } else {
             msgEl.innerText = result.error || "Login failed";
             msgEl.style.color = "red";
@@ -107,9 +112,15 @@ function handleGoogleLogin(response) {
             localStorage.setItem("token", data.token);
             localStorage.setItem("email", data.user.email);
             localStorage.setItem("googleUser", JSON.stringify(data.user));
+            localStorage.setItem("role", data.user.role || "user");
 
-            window.location.href = "dashboard.html";
-        } else {
+            if ((data.user.role || "user") === "admin") {
+                window.location.href = "admin.html";
+            } else {
+                window.location.href = "dashboard.html";
+            }
+        } 
+        else {
             alert("Google login failed: " + (data.error || "unknown"));
         }
     })

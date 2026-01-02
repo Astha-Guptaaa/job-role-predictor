@@ -5,24 +5,28 @@
   <meta charset="UTF-8">
   <title>Edu2Job Dashboard</title>
   <link rel="stylesheet" href="style.css">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 </head>
 <body>
+  
 
 <div class="dashboard-container">
 
   <!-- ================= HEADER ================= -->
-  <div class="header">
-    <div class="logo">Edu2Job</div>
-
-    <div class="welcome-msg">
-      Welcome, <span id="user_name">User</span>
-    </div>
-
-    <div class="header-actions">
-      <button id="profileBtn" class="small-btn">Profile</button>
-      <button id="logoutBtn" class="logout-btn small-btn">Logout</button>
-    </div>
+<div class="navbar">
+  <div class="nav-left">
+    <span class="logo">Edu2Job</span>
   </div>
+
+
+  <div class="nav-right">
+    <span class="welcome">Hi, <b id="user_name">User</b></span>
+    <button id="profileBtn">Profile</button>
+    <button id="logoutBtn" class="danger">Logout</button>
+  </div>
+</div>
+
+<div id="dashboardTop">
 
   <!-- ================= MAIN CONTENT ================= -->
   <div class="dashboard-content">
@@ -44,6 +48,20 @@
       <p><strong>Certifications:</strong> <span id="certifications"></span></p>
 
       <button id="editBtn" class="primary-btn">Edit Profile</button>
+   
+    <!-- ===== EDIT PROFILE FORM (HIDDEN) ===== -->
+    <div class="card edit-card" id="editForm" style="display:none;">
+      <h3>Edit Profile</h3>
+
+      <label>Name</label>
+      <input id="edit_name" />
+
+      <label>About You</label>
+      <textarea id="edit_about" rows="3" placeholder="Write a short summary about yourself"></textarea>
+
+      <button id="saveBtn" class="primary-btn">Save Changes</button>
+      <p id="update_msg"></p>
+    </div>
     </div>
 
     <!-- ===== CENTER COLUMN : ACTIONS ===== -->
@@ -64,6 +82,9 @@
 <button id="predictBtn" class="btn btn-success predict-btn" type="button">
   Analyze & Predict Job Role
 </button>
+ 
+<div id="predictionResult" style="display:none;"></div>
+
     </div>
  
     <!-- ===== RIGHT COLUMN : PREDICTION HISTORY ===== -->
@@ -71,35 +92,78 @@
   <h3>Job Role Prediction</h3>
 
   <!-- NEW PREDICTION -->
-  <div id="predictionResult" style="display:none;"></div>
 
-  <!-- PREDICTION HISTORY -->
-  <div id="predictionHistory"></div>
+
+
+   <div id="predictionHistory"></div>
 
   <p class="muted-text" id="noPredictionText">
     No predictions yet.<br>
     Complete your profile to see results here.
   </p>
+
+ <div class="card career-card">
+  <h3>Career Insights</h3>
+  <p id="predictedRole"></p>
+  <p id="careerInsight"></p>
+  <ul id="alternativeRoles"></ul>
 </div>
+  <!-- PREDICTION HISTORY -->
 
 
-    <!-- ===== EDIT PROFILE FORM (HIDDEN) ===== -->
-    <div class="card edit-card" id="editForm" style="display:none;">
-      <h3>Edit Profile</h3>
 
-      <label>Name</label>
-      <input id="edit_name" />
-
-      <label>About You</label>
-      <textarea id="edit_about" rows="3" placeholder="Write a short summary about yourself"></textarea>
-
-      <button id="saveBtn" class="primary-btn">Save Changes</button>
-      <p id="update_msg"></p>
-    </div>
+</div>
 
   </div>
 </div>
+</div>
+
+
+<!-- ================= ANALYTICS ================= -->
+<div class="section-wrapper" id="analytics">
+  <h3 class="section-title">Career Analytics</h3>
+
+  <div class="analytics-grid">
+    <div class="chart-card">
+      <h4>Degree → Job Role Mapping</h4>
+      <canvas id="degreeJobChart"></canvas>
+    </div>
+
+    <div class="chart-card">
+      <h4>Job Domain Distribution</h4>
+      <canvas id="jobDomainChart"></canvas>
+    </div>
+  </div>
+</div>
+
+
+<!-- ================= FEEDBACK ================= -->
+<div class="section-wrapper" id="feedback">
+  <h2 class="section-title">Prediction Feedback</h2>
+
+  <div class="feedback-card">
+    <label>Rate Prediction</label>
+    <select id="rating">
+      <option value="5">⭐⭐⭐⭐⭐ Excellent</option>
+      <option value="4">⭐⭐⭐⭐ Good</option>
+      <option value="3">⭐⭐⭐ Average</option>
+      <option value="2">⭐⭐ Poor</option>
+      <option value="1">⭐ Very Poor</option>
+    </select>
+
+    <label>Your Comments</label>
+    <textarea id="comment" placeholder="Was this prediction helpful?"></textarea>
+
+    <button class="primary-btn" onclick="submitFeedback()">
+      Submit Feedback
+    </button>
+
+    <p id="feedbackMsg"></p>
+  </div>
+</div>
+
 
 <script src="dashboard.js"></script>
+
 </body>
 </html>

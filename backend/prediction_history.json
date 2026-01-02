@@ -2,139 +2,43 @@
     {
         "user_id": "astha7534@gmail.com",
         "input_details": {
-            "degree": "B.Tech",
-            "specialization": "Computer Science",
-            "cgpa": 8.2,
+            "degree": "B.E",
+            "specialization": "Mechanical",
+            "cgpa": 8.5,
             "certifications": [
-                "Google Cloud Certified",
-                "CISSP",
-                "Data Science Certification"
+                "Microsoft Certified",
+                "CISSP"
             ]
         },
         "predictions": [
             {
-                "job_role": "Data Science",
-                "confidence": 36.54
-            },
-            {
-                "job_role": "Cloud Architect",
-                "confidence": 28.85
+                "job_role": "Mechanical Engineer",
+                "confidence": 57.69
             },
             {
                 "job_role": "HR",
-                "confidence": 15.38
-            },
-            {
-                "job_role": "SEO Specialist",
-                "confidence": 9.62
+                "confidence": 12.82
             },
             {
                 "job_role": "Arts",
-                "confidence": 9.62
-            }
-        ],
-        "timestamp": "2025-12-21 19:01:14"
-    },
-    {
-        "timestamp": "2025-12-21 17:53:29",
-        "input_text": "computer science mysql python machine learning",
-        "top_job_roles": [
-            {
-                "role": "Machine Learning Engineer",
-                "confidence": "41.56%"
+                "confidence": 11.54
             },
             {
-                "role": "Data Science",
-                "confidence": "20.78%"
-            },
-            {
-                "role": "AI Specialist",
-                "confidence": "16.88%"
-            },
-            {
-                "role": "AI Researcher",
-                "confidence": "12.99%"
-            },
-            {
-                "role": "Python Developer",
-                "confidence": "7.79%"
-            }
-        ]
-    },
-    {
-        "user_id": "astha7534@gmail.com",
-        "input_details": {
-            "degree": "B.Sc",
-            "specialization": "Mathematics",
-            "cgpa": 9.0,
-            "certifications": [
-                "Microsoft Certified",
-                "Data Science Certification"
-            ]
-        },
-        "predictions": [
-            {
-                "job_role": "Data Science",
-                "confidence": 38.98
-            },
-            {
-                "job_role": "Research Scientist",
-                "confidence": 32.2
-            },
-            {
-                "job_role": "HR",
-                "confidence": 13.56
+                "job_role": "Robotics Engineer",
+                "confidence": 8.97
             },
             {
                 "job_role": "Advocate",
-                "confidence": 8.47
-            },
-            {
-                "job_role": "Arts",
-                "confidence": 6.78
+                "confidence": 8.97
             }
         ],
-        "timestamp": "2025-12-21 22:53:43"
+        "timestamp": "2025-12-28 23:29:31",
+        "flagged": true
     },
     {
         "user_id": "astha7534@gmail.com",
         "input_details": {
             "degree": "M.Tech",
-            "specialization": "Computer Science",
-            "cgpa": 9.0,
-            "certifications": [
-                "Microsoft Certified",
-                "Data Science Certification"
-            ]
-        },
-        "predictions": [
-            {
-                "job_role": "Data Science",
-                "confidence": 50.0
-            },
-            {
-                "job_role": "HR",
-                "confidence": 18.0
-            },
-            {
-                "job_role": "Advocate",
-                "confidence": 12.0
-            },
-            {
-                "job_role": "SEO Specialist",
-                "confidence": 10.0
-            },
-            {
-                "job_role": "Arts",
-                "confidence": 10.0
-            }
-        ],
-        "timestamp": "2025-12-21 23:31:27"
-    },
-    {
-        "user_id": "astha7534@gmail.com",
-        "input_details": {
-            "degree": "B.Tech",
             "specialization": "Computer Science",
             "cgpa": 8.9,
             "certifications": [
@@ -164,15 +68,422 @@
                 "confidence": 10.53
             }
         ],
-        "timestamp": "2025-12-21 23:35:32"
+        "timestamp": "2025-12-29 08:31:07",
+        "flagged": true
     },
     {
         "user_id": "astha7534@gmail.com",
         "input_details": {
-            "degree": "B.E",
-            "specialization": "Computer Engineering",
-            "cgpa": 7.8,
+            "degree": "B.Tech",
+            "specialization": "Computer Science",
+            "cgpa": 8.9,
+            "certifications": [
+                "Microsoft Certified",
+                "Google Cloud Certified",
+                "CEH",
+                "Data Science Certification"
+            ]
+        },
+        "predictions": [
+            {
+                "job_role": "Data Science",
+                "confidence": 36.54
+            },
+            {
+                "job_role": "Cloud Architect",
+                "confidence": 28.85
+            },
+            {
+                "job_role": "HR",
+                "confidence": 15.38
+            },
+            {
+                "job_role": "SEO Specialist",
+                "confidence": 9.62
+            },
+            {
+                "job_role": "Arts",
+                "confidence": 9.62
+            }
+        ],
+        "timestamp": "2025-12-29 14:59:05",
+        "flagged": true
+    },
+    {
+        "user_id": "astha7534@gmail.com",
+        "input_details": {
+            "degree": "B.Tech",
+            "specialization": "Electronics",
+            "cgpa": 8.9,
+            "certifications": [
+                "Microsoft Certified",
+                "Google Cloud Certified",
+                "CEH",
+                "Data Science Certification"
+            ]
+        },
+        "predictions": [
+            {
+                "job_role": "Data Science",
+                "confidence": 34.62
+            },
+            {
+                "job_role": "Cloud Architect",
+                "confidence": 28.85
+            },
+            {
+                "job_role": "HR",
+                "confidence": 15.38
+            },
+            {
+                "job_role": "Arts",
+                "confidence": 11.54
+            },
+            {
+                "job_role": "SEO Specialist",
+                "confidence": 9.62
+            }
+        ],
+        "timestamp": "2025-12-29 15:00:01",
+        "flagged": true
+    },
+    {
+        "user_id": "astha7534@gmail.com",
+        "input_details": {
+            "degree": "B.Tech",
+            "specialization": "Electronics",
+            "cgpa": 8.9,
             "certifications": []
+        },
+        "predictions": [
+            {
+                "job_role": "HR",
+                "confidence": 29.82
+            },
+            {
+                "job_role": "Arts",
+                "confidence": 28.07
+            },
+            {
+                "job_role": "Advocate",
+                "confidence": 22.81
+            },
+            {
+                "job_role": "Veterinarian",
+                "confidence": 10.53
+            },
+            {
+                "job_role": "SEO Specialist",
+                "confidence": 8.77
+            }
+        ],
+        "timestamp": "2025-12-30 10:28:39",
+        "flagged": true
+    },
+    {
+        "user_id": "astha7534@gmail.com",
+        "input_details": {
+            "degree": "B.Sc",
+            "specialization": "Mathematics",
+            "cgpa": 8.9,
+            "certifications": []
+        },
+        "predictions": [
+            {
+                "job_role": "HR",
+                "confidence": 27.69
+            },
+            {
+                "job_role": "Arts",
+                "confidence": 21.54
+            },
+            {
+                "job_role": "Research Scientist",
+                "confidence": 21.54
+            },
+            {
+                "job_role": "Advocate",
+                "confidence": 21.54
+            },
+            {
+                "job_role": "Veterinarian",
+                "confidence": 7.69
+            }
+        ],
+        "timestamp": "2025-12-30 10:29:15"
+    },
+    {
+        "user_id": "astha7534@gmail.com",
+        "input_details": {
+            "degree": "BBA",
+            "specialization": "Management",
+            "cgpa": 8.9,
+            "certifications": []
+        },
+        "predictions": [
+            {
+                "job_role": "HR",
+                "confidence": 35.85
+            },
+            {
+                "job_role": "Advocate",
+                "confidence": 24.53
+            },
+            {
+                "job_role": "Arts",
+                "confidence": 18.87
+            },
+            {
+                "job_role": "Supply Chain Manager",
+                "confidence": 11.32
+            },
+            {
+                "job_role": "Architect",
+                "confidence": 9.43
+            }
+        ],
+        "timestamp": "2025-12-31 16:52:17",
+        "flagged": true
+    },
+    {
+        "user_id": "asthag414@gmail.com",
+        "input_details": {
+            "degree": "BBA",
+            "specialization": "Management",
+            "cgpa": 8.9,
+            "certifications": []
+        },
+        "predictions": [
+            {
+                "job_role": "HR",
+                "confidence": 35.85
+            },
+            {
+                "job_role": "Advocate",
+                "confidence": 24.53
+            },
+            {
+                "job_role": "Arts",
+                "confidence": 18.87
+            },
+            {
+                "job_role": "Supply Chain Manager",
+                "confidence": 11.32
+            },
+            {
+                "job_role": "Architect",
+                "confidence": 9.43
+            }
+        ],
+        "timestamp": "2025-12-31 11:31:26",
+        "flagged": true
+    },
+    {
+        "user_id": "astha7534@gmail.com",
+        "input_details": {
+            "degree": "B.Com",
+            "specialization": "Accounting",
+            "cgpa": 8.9,
+            "certifications": []
+        },
+        "predictions": [
+            {
+                "job_role": "Advocate",
+                "confidence": 27.42
+            },
+            {
+                "job_role": "HR",
+                "confidence": 25.81
+            },
+            {
+                "job_role": "Arts",
+                "confidence": 25.81
+            },
+            {
+                "job_role": "Accountant",
+                "confidence": 11.29
+            },
+            {
+                "job_role": "Veterinarian",
+                "confidence": 9.68
+            }
+        ],
+        "timestamp": "2025-12-31 18:35:15"
+    },
+    {
+        "user_id": "astha7534@gmail.com",
+        "input_details": {
+            "degree": "B.Tech",
+            "specialization": "Computer Science",
+            "cgpa": 8.9,
+            "certifications": []
+        },
+        "predictions": [
+            {
+                "job_role": "Advocate",
+                "confidence": 29.82
+            },
+            {
+                "job_role": "HR",
+                "confidence": 29.82
+            },
+            {
+                "job_role": "Arts",
+                "confidence": 17.54
+            },
+            {
+                "job_role": "Data Science",
+                "confidence": 12.28
+            },
+            {
+                "job_role": "Veterinarian",
+                "confidence": 10.53
+            }
+        ],
+        "timestamp": "2025-12-31 18:16:26"
+    },
+    {
+        "user_id": "astha7534@gmail.com",
+        "input_details": {
+            "degree": "BBA",
+            "specialization": "Marketing",
+            "cgpa": 8.9,
+            "certifications": []
+        },
+        "predictions": [
+            {
+                "job_role": "SEO Specialist",
+                "confidence": 28.79
+            },
+            {
+                "job_role": "HR",
+                "confidence": 21.21
+            },
+            {
+                "job_role": "Arts",
+                "confidence": 19.7
+            },
+            {
+                "job_role": "Advocate",
+                "confidence": 19.7
+            },
+            {
+                "job_role": "Marketing Manager",
+                "confidence": 10.61
+            }
+        ],
+        "timestamp": "2025-12-31 18:35:54"
+    },
+    {
+        "user_id": "astha7534@gmail.com",
+        "input_details": {
+            "degree": "BBA",
+            "specialization": "Marketing",
+            "cgpa": 8.9,
+            "certifications": [
+                "Communication"
+            ]
+        },
+        "predictions": [
+            {
+                "job_role": "SEO Specialist",
+                "confidence": 30.0
+            },
+            {
+                "job_role": "HR",
+                "confidence": 25.0
+            },
+            {
+                "job_role": "Arts",
+                "confidence": 18.33
+            },
+            {
+                "job_role": "Advocate",
+                "confidence": 18.33
+            },
+            {
+                "job_role": "Sales",
+                "confidence": 8.33
+            }
+        ],
+        "timestamp": "2025-12-31 20:29:15"
+    },
+    {
+        "user_id": "astha7534@gmail.com",
+        "input_details": {
+            "degree": "BCA",
+            "specialization": "Data Analytics",
+            "cgpa": 8.9,
+            "certifications": []
+        },
+        "predictions": [
+            {
+                "job_role": "SEO Specialist",
+                "confidence": 32.2
+            },
+            {
+                "job_role": "Data Science",
+                "confidence": 30.51
+            },
+            {
+                "job_role": "Arts",
+                "confidence": 13.56
+            },
+            {
+                "job_role": "HR",
+                "confidence": 11.86
+            },
+            {
+                "job_role": "Advocate",
+                "confidence": 11.86
+            }
+        ],
+        "timestamp": "2026-01-01 17:38:14"
+    },
+    {
+        "user_id": "asthag414@gmail.com",
+        "input_details": {
+            "degree": "MCA",
+            "specialization": "Data Science",
+            "cgpa": 8.9,
+            "certifications": [
+                "Data Science Certification"
+            ]
+        },
+        "predictions": [
+            {
+                "job_role": "Data Science",
+                "confidence": 42.62
+            },
+            {
+                "job_role": "Data Analyst",
+                "confidence": 24.59
+            },
+            {
+                "job_role": "HR",
+                "confidence": 13.11
+            },
+            {
+                "job_role": "AI Researcher",
+                "confidence": 11.48
+            },
+            {
+                "job_role": "SEO Specialist",
+                "confidence": 8.2
+            }
+        ],
+        "timestamp": "2026-01-01 00:33:36"
+    },
+    {
+        "user_id": "astha7534@gmail.com",
+        "input_details": {
+            "degree": "B.Tech",
+            "specialization": "Information Technology",
+            "cgpa": 8.9,
+            "certifications": [
+                "Microsoft Certified",
+                "AWS Certified"
+            ]
         },
         "predictions": [
             {
@@ -180,227 +491,202 @@
                 "confidence": 30.77
             },
             {
+                "job_role": "Advocate",
+                "confidence": 23.08
+            },
+            {
                 "job_role": "Arts",
                 "confidence": 21.15
             },
             {
-                "job_role": "Advocate",
-                "confidence": 21.15
-            },
-            {
-                "job_role": "Electrical Engineering",
-                "confidence": 13.46
-            },
-            {
-                "job_role": "Architect",
-                "confidence": 13.46
-            }
-        ],
-        "timestamp": "2025-12-21 23:56:14"
-    },
-    {
-        "user_id": "astha7534@gmail.com",
-        "input_details": {
-            "degree": "B.E",
-            "specialization": "Computer Engineering",
-            "cgpa": 7.8,
-            "certifications": [
-                "Microsoft Certified",
-                "Google Cloud Certified",
-                "Data Science Certification"
-            ]
-        },
-        "predictions": [
-            {
-                "job_role": "Data Science",
-                "confidence": 32.61
-            },
-            {
-                "job_role": "Cloud Architect",
-                "confidence": 30.43
-            },
-            {
-                "job_role": "HR",
-                "confidence": 15.22
-            },
-            {
-                "job_role": "Architect",
-                "confidence": 10.87
+                "job_role": "DotNet Developer",
+                "confidence": 15.38
             },
             {
                 "job_role": "SEO Specialist",
-                "confidence": 10.87
+                "confidence": 9.62
             }
         ],
-        "timestamp": "2025-12-21 23:56:40"
+        "timestamp": "2026-01-02 17:48:47"
     },
     {
-        "user_id": "astha7534@gmail.com",
+        "user_id": "new@gmail.com",
         "input_details": {
             "degree": "B.Tech",
             "specialization": "Computer Science",
-            "cgpa": 7.8,
+            "cgpa": 8.9,
             "certifications": [
-                "Responsive web development"
-            ]
-        },
-        "predictions": [
-            {
-                "job_role": "Web Developer",
-                "confidence": 44.64
-            },
-            {
-                "job_role": "Graphic Designer",
-                "confidence": 17.86
-            },
-            {
-                "job_role": "Arts",
-                "confidence": 14.29
-            },
-            {
-                "job_role": "HR",
-                "confidence": 12.5
-            },
-            {
-                "job_role": "Advocate",
-                "confidence": 10.71
-            }
-        ],
-        "timestamp": "2025-12-22 12:21:35"
-    },
-    {
-        "user_id": "astha7534@gmail.com",
-        "input_details": {
-            "degree": "B.Tech",
-            "specialization": "Data Science",
-            "cgpa": 7.8,
-            "certifications": [
+                "Microsoft Certified",
                 "Python Fundamental"
             ]
         },
         "predictions": [
             {
-                "job_role": "Data Science",
-                "confidence": 46.43
+                "job_role": "HR",
+                "confidence": 24.14
             },
             {
                 "job_role": "Python Developer",
-                "confidence": 17.86
+                "confidence": 22.41
             },
             {
-                "job_role": "Machine Learning Engineer",
-                "confidence": 14.29
-            },
-            {
-                "job_role": "HR",
-                "confidence": 12.5
-            },
-            {
-                "job_role": "AI Researcher",
-                "confidence": 8.93
-            }
-        ],
-        "timestamp": "2025-12-22 12:23:23"
-    },
-    {
-        "user_id": "astha7534@gmail.com",
-        "input_details": {
-            "degree": "B.Sc",
-            "specialization": "Physics",
-            "cgpa": 7.8,
-            "certifications": []
-        },
-        "predictions": [
-            {
-                "job_role": "HR",
-                "confidence": 31.15
+                "job_role": "Data Science",
+                "confidence": 20.69
             },
             {
                 "job_role": "Advocate",
-                "confidence": 26.23
+                "confidence": 20.69
             },
             {
-                "job_role": "Arts",
-                "confidence": 24.59
+                "job_role": "Machine Learning Engineer",
+                "confidence": 12.07
+            }
+        ],
+        "timestamp": "2026-01-02 14:55:11",
+        "flagged": true
+    },
+    {
+        "user_id": "admin@gmail.com",
+        "input_details": {
+            "degree": "B.Tech",
+            "specialization": "Computer Science",
+            "cgpa": 9.0,
+            "certifications": [
+                "Microsoft Certified",
+                "Proficient in Ethical Hacking, Penetration Testing, Risk Assessment, Firewalls, Cyber Threats, with senior-level experience in the field. Holds a Masters degree. Holds certifications such as Certified Information Security Manager (CISM)"
+            ]
+        },
+        "predictions": [
+            {
+                "job_role": "Cybersecurity Analyst",
+                "confidence": 93.48
             },
             {
-                "job_role": "Veterinarian",
-                "confidence": 9.84
+                "job_role": "HR",
+                "confidence": 2.17
+            },
+            {
+                "job_role": "Network Security Engineer",
+                "confidence": 2.17
+            },
+            {
+                "job_role": "Legal Consultant",
+                "confidence": 1.09
             },
             {
                 "job_role": "SEO Specialist",
-                "confidence": 8.2
+                "confidence": 1.09
             }
         ],
-        "timestamp": "2025-12-22 12:24:28"
+        "timestamp": "2026-01-02 19:04:51",
+        "flagged": false
     },
     {
-        "user_id": "astha7534@gmail.com",
+        "user_id": "admin@gmail.com",
         "input_details": {
-            "degree": "B.Tech",
-            "specialization": "Data Science",
-            "cgpa": 7.8,
+            "degree": "M.Tech",
+            "specialization": "AI & ML",
+            "cgpa": 9.0,
             "certifications": [
-                "Microsoft Certified",
-                "Data Science Certification"
+                "Data Visualization, Data Science, Machine Learning, Python"
             ]
         },
         "predictions": [
             {
-                "job_role": "Data Science",
-                "confidence": 42.37
-            },
-            {
-                "job_role": "Data Analyst",
-                "confidence": 22.03
-            },
-            {
-                "job_role": "HR",
-                "confidence": 15.25
-            },
-            {
                 "job_role": "Machine Learning Engineer",
-                "confidence": 11.86
+                "confidence": 46.81
             },
-            {
-                "job_role": "Arts",
-                "confidence": 8.47
-            }
-        ],
-        "timestamp": "2025-12-22 19:33:36"
-    },
-    {
-        "user_id": "astha7534@gmail.com",
-        "input_details": {
-            "degree": "B.Tech",
-            "specialization": "Data Science",
-            "cgpa": 9.1,
-            "certifications": [
-                "Data Science Certification"
-            ]
-        },
-        "predictions": [
             {
                 "job_role": "Data Science",
-                "confidence": 40.0
+                "confidence": 22.34
             },
             {
-                "job_role": "Data Analyst",
-                "confidence": 25.0
-            },
-            {
-                "job_role": "HR",
-                "confidence": 15.0
-            },
-            {
-                "job_role": "Machine Learning Engineer",
-                "confidence": 10.0
+                "job_role": "AI Specialist",
+                "confidence": 17.02
             },
             {
                 "job_role": "AI Researcher",
-                "confidence": 10.0
+                "confidence": 9.57
+            },
+            {
+                "job_role": "Data Analyst",
+                "confidence": 4.26
             }
         ],
-        "timestamp": "2025-12-22 19:34:42"
+        "timestamp": "2026-01-02 19:07:23",
+        "flagged": false
+    },
+    {
+        "user_id": "asthag414@gmail.com",
+        "input_details": {
+            "degree": "B.Tech",
+            "specialization": "Data Science",
+            "cgpa": 8.9,
+            "certifications": [
+                "Data Science Certification",
+                "Proficient in SQL, R, Data Visualization, Statistics, Excel"
+            ]
+        },
+        "predictions": [
+            {
+                "job_role": "Data Analyst",
+                "confidence": 46.25
+            },
+            {
+                "job_role": "Data Science",
+                "confidence": 22.5
+            },
+            {
+                "job_role": "Machine Learning Engineer",
+                "confidence": 15.0
+            },
+            {
+                "job_role": "Financial Analyst",
+                "confidence": 10.0
+            },
+            {
+                "job_role": "HR",
+                "confidence": 6.25
+            }
+        ],
+        "timestamp": "2026-01-02 19:12:36",
+        "flagged": false
+    },
+    {
+        "user_id": "astha7534@gmail.com",
+        "input_details": {
+            "degree": "M.Tech",
+            "specialization": "AI & ML",
+            "cgpa": 8.9,
+            "certifications": [
+                "Microsoft Certified",
+                "AWS Certified",
+                "Data Visualization, Data Science, Machine Learning, Python"
+            ]
+        },
+        "predictions": [
+            {
+                "job_role": "Machine Learning Engineer",
+                "confidence": 49.46
+            },
+            {
+                "job_role": "Data Science",
+                "confidence": 23.66
+            },
+            {
+                "job_role": "AI Specialist",
+                "confidence": 16.13
+            },
+            {
+                "job_role": "AI Researcher",
+                "confidence": 7.53
+            },
+            {
+                "job_role": "Python Developer",
+                "confidence": 3.23
+            }
+        ],
+        "timestamp": "2026-01-02 19:19:49",
+        "flagged": false
     }
 ]
